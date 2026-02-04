@@ -1,7 +1,11 @@
 import type { FKEngine } from "./FKEngine";
+import type { GameObject } from "./GameObject";
 
 export abstract class Scene {
-    engine: FKEngine
+    protected engine: FKEngine
+
+    protected entities: GameObject[] = []
+
     constructor(engine: FKEngine){
         this.engine = engine
     }
@@ -16,11 +20,31 @@ export abstract class Scene {
      * update: Processa a lógica da cena.
      * @param dt Delta Time vindo da FKEngine.
      */
-    public abstract update(dt: number): void;
+    update(dt: number): void {
+        for (const entity of this.entities){
+            if (entity.active) entity.update(dt)
+        }
+    }
 
     /**
      * draw: Renderiza os elementos da cena.
      * @param ctx Contexto 2D do Canvas.
      */
-    public abstract draw(ctx: CanvasRenderingContext2D): void;
+    draw(ctx: CanvasRenderingContext2D): void {
+        for (const entity of this.entities) {
+            if (entity.active) entity.draw(ctx)
+        }
+    }
+
+    add(entity: GameObject) {
+        this.entities.push(entity)
+    }
+
+    getEntities(): ReadonlyArray<GameObject> {
+        return this.entities
+    }
+
+    cleanup(): void {
+        this.entities = this.entities.filter(e => e.active)
+    }
 }

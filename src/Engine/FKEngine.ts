@@ -1,19 +1,26 @@
+import { AssetManager } from '../Utils/AssetManager';
 import { InputManager } from '../Utils/InputManager';
 import { Time } from '../Utils/Time';
 import type { Scene } from './Scene';
 
 export class FKEngine {
+    readonly assets: AssetManager;
     readonly ctx: CanvasRenderingContext2D;
-    readonly time: Time;
     readonly input: InputManager;
+    readonly time: Time;
+    
+    readonly #tickRate: number = 1 /60
+    #accumulator: number = 0
+
 
     currentScene: Scene | null = null
 
     constructor(canvas: HTMLCanvasElement) {
+        this.assets = new AssetManager();
         this.ctx = canvas.getContext('2d')!
         this.time = new Time();
         this.input = new InputManager();
-        
+
         requestAnimationFrame(this.#gameLoop)
     }
 
@@ -25,8 +32,13 @@ export class FKEngine {
     #gameLoop = () => {
         this.time.update()
 
-        if (this.currentScene){
-            this.currentScene.update(this.time.deltaTime)
+        this.#accumulator += this.time.deltaTime
+
+        while (this.#accumulator >= this.#tickRate) {
+            if (this.currentScene){
+                this.currentScene.update(this.#tickRate)
+            }
+            this.#accumulator -= this.#tickRate
         }
 
         this.#draw()
