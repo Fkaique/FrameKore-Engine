@@ -2,7 +2,7 @@ import type { GameObject } from "./GameObject";
 
 export class Physics {
     /**
-     * Verifica se dois GameObjects estão colidindo
+     * checkCollision: Verifica se dois GameObjects estão colidindo
     */
     static checkCollision(a: GameObject, b: GameObject): boolean {
         return (
@@ -12,24 +12,28 @@ export class Physics {
             a.top < b.bottom
         );
     }
+    /**
+     * resolveCollision: verifica a colisão entre dois objetos: GameObject
+     * @param object1 GameObject
+     * @param object2 GameObject 
+     */
+    static resolveCollision(object1: GameObject, object2: GameObject) {
+        const dx = (object1.position.x + object1.size.x / 2) - (object2.position.x + object2.size.x / 2)
+        const dy = (object1.position.y + object1.size.y / 2) - (object2.position.y + object2.size.y / 2)
 
-    static resolveCollision(player: GameObject, wall: GameObject) {
-        const dx = (player.position.x + player.size.x / 2) - (wall.position.x + wall.size.x / 2)
-        const dy = (player.position.y + player.size.y / 2) - (wall.position.y + wall.size.y / 2)
-
-        const combinedHalfWidths = (player.size.x / 2) + (wall.size.x / 2)
-        const combinedHalfHeights = (player.size.y / 2) + (wall.size.y / 2)
+        const combinedHalfWidths = (object1.size.x / 2) + (object2.size.x / 2)
+        const combinedHalfHeights = (object1.size.y / 2) + (object2.size.y / 2)
 
         if (Math.abs(dx) < combinedHalfWidths && Math.abs(dy) < combinedHalfHeights) {
             const overlapX = combinedHalfWidths - Math.abs(dx)
             const overlapY = combinedHalfHeights - Math.abs(dy)
 
             if (overlapX < overlapY) {
-                if (dx > 0) player.position.x += overlapX
-                else player.position.x -= overlapX
+                if (dx > 0) object1.position.x += overlapX
+                else object1.position.x -= overlapX
             } else {
-                if (dy > 0) player.position.y += overlapY
-                else player.position.y -= overlapY
+                if (dy > 0) object1.position.y += overlapY
+                else object1.position.y -= overlapY
             }
         }
     }

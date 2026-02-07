@@ -12,7 +12,6 @@ export class FKEngine {
     readonly #tickRate: number = 1 /60
     #accumulator: number = 0
 
-
     currentScene: Scene | null = null
 
     constructor(canvas: HTMLCanvasElement) {
@@ -23,7 +22,11 @@ export class FKEngine {
 
         requestAnimationFrame(this.#gameLoop)
     }
-
+    /**
+     * Define a Cena atual do jogo
+     * @example
+     * setScene(new Level1(engine: FKEngine))
+     */
     setScene(scene: Scene){
         this.currentScene = scene
         this.currentScene.init()
