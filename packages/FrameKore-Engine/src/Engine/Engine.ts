@@ -1,6 +1,7 @@
 import { AssetManager } from '../Utils/AssetManager';
 import { InputManager } from '../Utils/InputManager';
 import { Time } from '../Utils/Time';
+import { Audio } from './Audio';
 import type { Scene } from './Scene';
 
 export class Engine {
@@ -8,6 +9,7 @@ export class Engine {
     readonly ctx: CanvasRenderingContext2D;
     readonly input: InputManager;
     readonly time: Time;
+    readonly audio: Audio
     
     readonly #tickRate: number = 1 /60
     #accumulator: number = 0
@@ -19,6 +21,11 @@ export class Engine {
         this.ctx = canvas.getContext('2d')!
         this.time = new Time();
         this.input = new InputManager();
+        this.audio = new Audio(this)
+
+        window.addEventListener('keydown', () => {
+
+        }, {once: true})
 
         requestAnimationFrame(this.#gameLoop)
     }
@@ -55,10 +62,6 @@ export class Engine {
         if (this.currentScene){
             this.currentScene.draw(this.ctx)
         }
-
-        //Desenhando FPS
-        this.ctx.fillStyle = 'white';
-        this.ctx.fillText(`FPS: ${Math.round(this.time.fps)}`, 40, 20);
     }
 
 }

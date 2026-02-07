@@ -3,7 +3,7 @@ import { Level1 } from "./Level1";
 
 export class Menu extends Scene {
     public init(): void {
-        console.log("Menu inicial! pressione [Enter] para jogar")
+        
     }
 
     public update(dt: number): void {

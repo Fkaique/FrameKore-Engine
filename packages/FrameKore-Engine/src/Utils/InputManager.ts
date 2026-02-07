@@ -11,19 +11,29 @@ export class InputManager {
             this.#keys[e.code] = false
         })
     }
-
+    /**
+     * Verifica se uma tecla está sendo pressionada
+     * @param key 
+     * @returns 
+     */
     isKeyDown(key: string): boolean {
         return !!this.#keys[key]
     }
-
-    getAxis(): Vector2 {
+    /**
+     * Retorna um Vector2 normalizado com a direção correspondente aos controles pressionados
+     * @param constrols {up, down, left, right}
+     * @returns new Vector2(x,y).normalize() ->
+     * x: -1 | 0 | 1, 
+     * y: -1 | 0 | 1
+     */
+    getAxis(controls = {up : 'ArrowUp', down : 'ArrowDown', left : 'ArrowLeft', right : 'ArrowRight'}): Vector2 {
         let x = 0
         let y = 0
 
-        if (this.isKeyDown('KeyW') || this.isKeyDown('ArrowUp')) y -= 1;
-        if (this.isKeyDown('KeyS') || this.isKeyDown('ArrowDown')) y += 1;
-        if (this.isKeyDown('KeyA') || this.isKeyDown('ArrowLeft')) x -= 1;
-        if (this.isKeyDown('KeyD') || this.isKeyDown('ArrowRight')) x += 1;
+        if (this.isKeyDown(controls.up)) y -= 1;
+        if (this.isKeyDown(controls.down)) y += 1;
+        if (this.isKeyDown(controls.left)) x -= 1;
+        if (this.isKeyDown(controls.right)) x += 1;
 
         return new Vector2(x,y).normalize();
     }
