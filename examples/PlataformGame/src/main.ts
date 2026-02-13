@@ -3,9 +3,34 @@ import { Engine } from "@framekore-engine/core"
 import { Menu } from "./Scenes/Menu"
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement
-
-const engine = new Engine(canvas)
 canvas.width = 800
 canvas.height = 800
 
-engine.setScene(new Menu(engine))
+canvas.style.width = `${window.innerWidth<innerHeight? window.innerWidth/1.3 : window.innerHeight/1.3}px`
+canvas.style.height =` ${window.innerWidth<innerHeight? window.innerWidth/1.3 : window.innerHeight/1.3}px`
+
+const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+
+ctx.textAlign = "center"
+ctx.textBaseline = "middle"
+ctx.font = "48px Arial"
+ctx.fillStyle = "white"
+ctx.fillText("Clique na tela!", canvas.width/2, canvas.height/2)
+
+function start(){
+    const engine = new Engine(canvas)
+    
+    engine.assets.setBaseURL(import.meta.env.BASE_URL)
+    
+    engine.assets.loadAudio("assets/trilha.ogg").then(audio=>{
+        audio.loop = true
+        audio.volume = 0.3;
+        (audio.cloneNode() as HTMLAudioElement).play()
+    })
+    
+    engine.setScene(new Menu(engine))
+}
+
+window.addEventListener('click', start, {
+    once: true
+})

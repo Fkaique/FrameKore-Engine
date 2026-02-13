@@ -9,16 +9,20 @@ import { Coin } from "../Entities/Itens/Coin";
 export class Level1 extends Scene {
     #camera!: Camera2D
     #player!: Player
+    #coinSound!: HTMLAudioElement
+    #puffSound!: HTMLAudioElement
     score: number = 0
 
     async init() {
-        await this.engine.assets.loadImage(new URL("assets/kore.png", import.meta.env.BASE_URL))
-        await this.engine.assets.loadImage(new URL("assets/virus.png", import.meta.env.BASE_URL))
-        await this.engine.assets.loadImage(new URL("assets/coin.png", import.meta.env.BASE_URL))
-        await this.engine.assets.loadAudio(new URL("assets/passo.ogg", import.meta.env.BASE_URL))
-        await this.engine.assets.loadAudio(new URL("assets/pulo.ogg", import.meta.env.BASE_URL))
-        await this.engine.assets.loadAudio(new URL("assets/coin.ogg", import.meta.env.BASE_URL))
-        await this.engine.assets.loadAudio(new URL("assets/puff.ogg", import.meta.env.BASE_URL))
+        // await this.engine.assets.loadImage("assets/kore.png")
+        // await this.engine.assets.loadImage("assets/virus.png")
+        // await this.engine.assets.loadImage("assets/coin.png")
+        await this.engine.assets.loadAudio("assets/coin.ogg").then(audio=>{
+            this.#coinSound=audio
+        })
+        await this.engine.assets.loadAudio("assets/puff.ogg").then(audio=>{
+            this.#puffSound=audio
+        })
         this.#player = new Player(this.engine, 100, 500)
         this.add(new Enemy(this.engine, 400, 500))
         this.add(new Enemy(this.engine, 700, 500))
@@ -67,7 +71,7 @@ export class Level1 extends Scene {
             entity.update(dt)
             if (entity instanceof Coin) {
                 if (Physics.checkCollision(this.#player, entity)) {
-                    this.engine.audio.play("/assets/coin.ogg")
+                    (this.#coinSound.cloneNode() as HTMLAudioElement).play()
                     entity.active = false,
                     this.score ++
                 }
@@ -85,8 +89,8 @@ export class Level1 extends Scene {
 
                     if (isStomping) {
                         entity.active = false
-                        this.engine.audio.play("/assets/puff.ogg")
-                        this.#player.bounce()
+                        this.#player.bounce();
+                        (this.#puffSound.cloneNode() as HTMLAudioElement).play()
                         this.score ++
                     } else {
                         const knockbackDir = this.#player.position.x < entity.position.x ? -1 : 1;

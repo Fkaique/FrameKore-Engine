@@ -35,6 +35,6 @@ canvas {
   position: absolute;
   width: 46px;
   height: 42px;
-  background-image: url(/public/kore.png);
+  background-image: url(assets/mascote.png);
   top: 30px;
 }

@@ -8,7 +8,6 @@ interface Animation {
 
 export class Sprite {
     #texture: HTMLImageElement | null = null
-    #path: string
     #engine: Engine
     #animations: Map<string, Animation> = new Map();
     #currentAnim: string | null = null
@@ -41,12 +40,11 @@ export class Sprite {
     #maxFrames: number = 1
     
     constructor(engine: Engine, path: string, fw: number, fh: number) {
-        this.#path = path
         this.#texture
         this.#engine = engine
-        this.#texture = this.#engine.assets.get(path)
         this.frameWidth = fw
         this.frameHeight = fh
+        this.#engine.assets.loadImage(path).then(texture=>{this.#texture=texture})
     }
     /**
      * Adiciona uma animação
@@ -110,11 +108,7 @@ export class Sprite {
      * @param h altura da sprite
      */
     draw(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
-        if (!this.#texture) {
-            this.#texture = this.#engine.assets.get(this.#path)
-            return
-        }
-
+        if (!this.#texture) return
         ctx.save()
 
         ctx.globalAlpha = this.alpha

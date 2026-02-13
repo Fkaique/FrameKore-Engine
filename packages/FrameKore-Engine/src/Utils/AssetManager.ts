@@ -1,19 +1,22 @@
 export class AssetManager {
+    #BASE_URL: URL = new URL(window.location.href)
     #storage: Map<string, any> = new Map()
 
     /**
      * Carrega uma imagem e a armazena no cache.
      * Retorna uma Promise que resolve quando a imagem está pronta.
     */
-    async loadImage(url: string | URL): Promise<HTMLImageElement> {
-        const key = url instanceof URL ? url.toString() : url
+    async loadImage(url: string | URL, base = this.#BASE_URL): Promise<HTMLImageElement> {
+        const normalizedURL = new URL(url, base)
+        const key = normalizedURL.toString()
+        
         if (this.#storage.has(key)) {
             return this.#storage.get(key)!
         }
 
         return new Promise((resolve, reject) => {
             const img = new Image()
-            img.src = key
+            img.src = normalizedURL.toString()
             img.onload = () => {
                 this.#storage.set(key,img)
                 resolve(img)
@@ -21,8 +24,9 @@ export class AssetManager {
             img.onerror = () => reject(`Erro ao carremar imagem: ${url}`)
         })
     }
-    async loadAudio(url: string | URL): Promise<HTMLAudioElement> {
-        const key = url instanceof URL ? url.toString() : url
+    async loadAudio(url: string | URL, base = this.#BASE_URL): Promise<HTMLAudioElement> {
+        const normalizedURL = new URL(url, base)
+        const key = normalizedURL.toString()
         
         if (this.#storage.has(key)) return this.#storage.get(key)
         if (this.#storage.has(key)) {
@@ -31,7 +35,7 @@ export class AssetManager {
 
         return new Promise((resolve, reject) => {
             const audio = new Audio()
-            audio.src = key
+            audio.src = normalizedURL.toString()
             audio.oncanplaythrough = () => {
                 this.#storage.set(key,audio)
                 resolve(audio)
@@ -40,14 +44,28 @@ export class AssetManager {
         })
     }
 
+    setBaseURL(url: URL | string) {
+        if (typeof url === "string") {
+            this.#BASE_URL = new URL(url, window.location.origin)
+            return
+        }
+        if (url instanceof URL) {
+            this.#BASE_URL = url
+            return
+        }
+        throw new TypeError("A URL base deve ser uma 'string' ou uma instancia de 'URL'")
+    }
+
     /**
      * Retorna uma imagem já carregada. 
      * Se não existir, avisa no console (útil para debug).
     */
-    get(path: string): HTMLImageElement {
-        const img = this.#storage.get(path)
+    get(url: URL | string, base = this.#BASE_URL): HTMLImageElement {
+        const normalizedURL = new URL(url, base)
+        const key = normalizedURL.toString()
+        const img = this.#storage.get(key)
         if (!img) {
-            console.error(`Asset não encontrado: ${path}. Garanta que ele foi carregado no init().`);
+            console.error(`Asset não encontrado: ${normalizedURL}. Garanta que ele foi carregado no init().`);
         }
         return img!
     }

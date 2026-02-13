@@ -70,6 +70,14 @@ export class Player extends GameObject {
         this.#engine = engine
         this.#sprite = new Sprite(engine, "/assets/kore.png", 23, 21)
         engine.ctx.imageSmoothingEnabled = false
+        engine.assets.loadAudio("assets/passo.ogg").then(audio=>{
+            this.#walkingSound=audio
+            audio.volume = 0.3
+        })
+        engine.assets.loadAudio("assets/pulo.ogg").then(audio=>{
+            this.#JumpingSound=audio
+            audio.volume = 0.3
+        })
 
         this.#sprite.addAnimation("idle", 0, 2, 0.3)
         this.#sprite.addAnimation("walk", 1, 2, 0.2)
@@ -115,6 +123,8 @@ export class Player extends GameObject {
             this.#currentState = PlayerState.JUMPING
             this.#isGrounded = false
             if (this.#walkingSound) this.#walkingSound.pause();
+            this.#JumpingSound?.play()
+            
         }
         if (this.#isInvencible) {
             this.#invencibilityTimer -= dt
@@ -179,11 +189,7 @@ export class Player extends GameObject {
         const isMoving = Math.abs(moveDir) > 0
         if (moveDir !== 0)
         if (this.#isGrounded && isMoving){
-            if (!this.#walkingSound) {
-                this.#walkingSound = this.#engine.audio.play('/assets/passo.ogg', { loop: true, volume: 0.3 })
-            } else if (this.#walkingSound.paused) {
-                this.#walkingSound.play()
-            }
+            this.#walkingSound?.play()
         } else {
             if (this.#walkingSound && !this.#walkingSound.paused) {
                 this.#walkingSound.pause()
@@ -212,18 +218,16 @@ export class Player extends GameObject {
         } else if (this.isFalling) {
             this.#sprite.play("falling")
         }
-
-        if (!this.#JumpingSound) {
-            this.#JumpingSound = this.#engine.audio.play('/assets/pulo.ogg', {volume: 0.3})
-        }
+        
 
         this.position.x += moveDir * this.#speed * dt
         
         if (moveDir < 0) this.#sprite.flipX = true
         else if (moveDir > 0) this.#sprite.flipX = false
 
-        if (this.#isGrounded) {
-            this.#JumpingSound = null
+        if (this.#isGrounded && this.#JumpingSound) {
+            this.#JumpingSound.currentTime = 0
+            this.#JumpingSound.pause()
             this.#currentState = moveDir !== 0 ? PlayerState.WALKING : PlayerState.IDLE
         }
 

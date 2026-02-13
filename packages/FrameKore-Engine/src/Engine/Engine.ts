@@ -1,7 +1,7 @@
 import { AssetManager } from '../Utils/AssetManager';
 import { InputManager } from '../Utils/InputManager';
 import { Time } from '../Utils/Time';
-import { Audio } from './Audio';
+// import { Audio } from './Audio';
 import type { Scene } from './Scene';
 
 export class Engine {
@@ -9,7 +9,6 @@ export class Engine {
     readonly ctx: CanvasRenderingContext2D;
     readonly input: InputManager;
     readonly time: Time;
-    readonly audio: Audio
     
     readonly #tickRate: number = 1 /60
     #accumulator: number = 0
@@ -21,7 +20,6 @@ export class Engine {
         this.ctx = canvas.getContext('2d')!
         this.time = new Time();
         this.input = new InputManager();
-        this.audio = new Audio(this)
 
         window.addEventListener('keydown', () => {
 
@@ -42,8 +40,9 @@ export class Engine {
     getScene(){
         return this.currentScene
     }
-
+    
     #gameLoop = () => {
+        requestAnimationFrame(this.#gameLoop)
         this.time.update()
 
         this.#accumulator += this.time.deltaTime
@@ -57,7 +56,6 @@ export class Engine {
 
         this.#draw()
 
-        requestAnimationFrame(this.#gameLoop)
     }
 
     #draw() {
