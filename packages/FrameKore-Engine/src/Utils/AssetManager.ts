@@ -5,32 +5,38 @@ export class AssetManager {
      * Carrega uma imagem e a armazena no cache.
      * Retorna uma Promise que resolve quando a imagem está pronta.
     */
-    async loadImage(path: string): Promise<HTMLImageElement> {
-        if (this.#storage.has(path)) {
-            return this.#storage.get(path)!
+    async loadImage(url: string | URL): Promise<HTMLImageElement> {
+        const key = url instanceof URL ? url.toString() : url
+        if (this.#storage.has(key)) {
+            return this.#storage.get(key)!
         }
 
         return new Promise((resolve, reject) => {
             const img = new Image()
-            img.src = path
+            img.src = key
             img.onload = () => {
-                this.#storage.set(path,img)
+                this.#storage.set(key,img)
                 resolve(img)
             }
-            img.onerror = () => reject(`Erro ao carremar imagem: ${path}`)
+            img.onerror = () => reject(`Erro ao carremar imagem: ${url}`)
         })
     }
-    async loadAudio(path: string): Promise<HTMLAudioElement> {
-        if (this.#storage.has(path)) return this.#storage.get(path)
+    async loadAudio(url: string | URL): Promise<HTMLAudioElement> {
+        const key = url instanceof URL ? url.toString() : url
+        
+        if (this.#storage.has(key)) return this.#storage.get(key)
+        if (this.#storage.has(key)) {
+            return this.#storage.get(key)!
+        }
 
         return new Promise((resolve, reject) => {
             const audio = new Audio()
-            audio.src = path
+            audio.src = key
             audio.oncanplaythrough = () => {
-                this.#storage.set(path,audio)
+                this.#storage.set(key,audio)
                 resolve(audio)
             }
-            audio.onerror = () => reject(`Erro ao carregar audio: ${path}`)
+            audio.onerror = () => reject(`Erro ao carregar audio: ${key}`)
         })
     }
 
