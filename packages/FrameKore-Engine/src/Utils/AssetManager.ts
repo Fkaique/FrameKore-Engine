@@ -1,5 +1,5 @@
 export class AssetManager {
-    #BASE_URL: URL = new URL(window.location.href)
+    #BASE_URL: URL = new URL(window.location.href, window.location.origin)
     #storage: Map<string, any> = new Map()
 
     /**
