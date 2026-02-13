@@ -12,13 +12,13 @@ export class Level1 extends Scene {
     score: number = 0
 
     async init() {
-        await this.engine.assets.loadImage('/assets/kore.png')
-        await this.engine.assets.loadImage('/assets/virus.png')
-        await this.engine.assets.loadImage('/assets/coin.png')
-        await this.engine.assets.loadAudio('/assets/passo.ogg')
-        await this.engine.assets.loadAudio('/assets/pulo.ogg')
-        await this.engine.assets.loadAudio('/assets/coin.ogg')
-        await this.engine.assets.loadAudio('/assets/puff.ogg')
+        await this.engine.assets.loadImage(new URL("assets/kore.png", import.meta.env.BASE_URL))
+        await this.engine.assets.loadImage(new URL("assets/virus.png", import.meta.env.BASE_URL))
+        await this.engine.assets.loadImage(new URL("assets/coin.png", import.meta.env.BASE_URL))
+        await this.engine.assets.loadAudio(new URL("assets/passo.ogg", import.meta.env.BASE_URL))
+        await this.engine.assets.loadAudio(new URL("assets/pulo.ogg", import.meta.env.BASE_URL))
+        await this.engine.assets.loadAudio(new URL("assets/coin.ogg", import.meta.env.BASE_URL))
+        await this.engine.assets.loadAudio(new URL("assets/puff.ogg", import.meta.env.BASE_URL))
         this.#player = new Player(this.engine, 100, 500)
         this.add(new Enemy(this.engine, 400, 500))
         this.add(new Enemy(this.engine, 700, 500))
