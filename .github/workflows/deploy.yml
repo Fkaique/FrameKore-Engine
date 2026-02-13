@@ -30,7 +30,7 @@ jobs:
       run: pnpm install
     
     - name: Build Engine and Examples
-      run: pnpm -r --sort --base "${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER}" build
+      run: pnpm -r --sort build --base "${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER}"
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
