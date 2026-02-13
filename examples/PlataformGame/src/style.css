@@ -1,14 +1,40 @@
+:root {
+  --color-primary: #1b3b52;
+  --color-secondary: #306082;
+}
+
 *, html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html, body, .canvas {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
-  display: flex;
-  justify-content: center;
+  background-image: linear-gradient(to top, var(--color-primary)50%, var(--color-secondary));
 }
 
 canvas {
-  background-color: rgb(15, 55, 56);
+  background-color: var(--color-secondary);
+  border: 5px solid var(--color-primary);
+  border-radius: 5px;
+}
+
+.canvas {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.kore {
+  position: absolute;
+  width: 46px;
+  height: 42px;
+  background-image: url(/public/kore.png);
+  top: 30px;
 }

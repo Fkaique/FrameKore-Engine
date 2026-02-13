@@ -4,7 +4,6 @@ import { Physics } from "@framekore-engine/core";
 import { Sprite } from "@framekore-engine/core";
 import { Vector2 } from "@framekore-engine/core";
 import { Wall } from "./Wall";
-import { Level1 } from "../Scenes/Level1";
 
 
 enum PlayerState {
@@ -20,23 +19,23 @@ export class Player extends GameObject {
     #currentState: PlayerState = PlayerState.IDLE
 
     #velocity: Vector2 = new Vector2(0, 0);
-    #gravity: number = 800;
-    #jumpForce: number = -400;
+    #gravity: number = 1000;
+    #jumpForce: number = -500;
     #isGrounded: boolean = false
 
     #walkingSound: HTMLAudioElement | null = null
     #JumpingSound: HTMLAudioElement | null = null
 
-    #controls = {
-        up: "KeyW",
-        down: "KeyS",
-        left: "KeyA",
-        right: "KeyD"
-    }
-
     hp = 10
     #isInvencible = false
     #invencibilityTimer = 0
+
+    #controls: {
+        up: boolean,
+        down: boolean,
+        left: boolean,
+        right: boolean
+    }
 
     get isFalling(): boolean {
     return this.#velocity.y > 0 && !this.#isGrounded;
@@ -44,6 +43,13 @@ export class Player extends GameObject {
 
     get isRising(): boolean {
         return this.#velocity.y < 0 && !this.#isGrounded;
+    }
+    get velocity() {
+        return this.#velocity
+    }
+
+    bounce(force: number = this.#jumpForce) {
+        this.#velocity.y = force * 0.6; 
     }
 
     takeDamage(damage: number, direction: number) {
@@ -59,22 +65,34 @@ export class Player extends GameObject {
     }
 
 
-    constructor(engine: Engine, x: number, y: number, w: number = 28, h: number = 48) {
+    constructor(engine: Engine, x: number, y: number, w: number = 46, h: number = 42) {
         super(x, y, w, h)
         this.#engine = engine
-        this.#sprite = new Sprite(engine, "/assets/Lillian.png", 14, 24)
+        this.#sprite = new Sprite(engine, "/assets/kore.png", 23, 21)
+        engine.ctx.imageSmoothingEnabled = false
 
-        this.#sprite.addAnimation("idle", 0, 3, 0.3)
+        this.#sprite.addAnimation("idle", 0, 2, 0.3)
         this.#sprite.addAnimation("walk", 1, 2, 0.2)
         this.#sprite.addAnimation("rising", 2, 1, 0)
         this.#sprite.addAnimation("falling", 3, 1, 0)
         this.#sprite.setAnimation(3, 0.1)
+        this.#controls = {
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        }
     }
 
     update(dt: number): void {
         this.#handlePhysics(dt)
 
-        
+        this.#controls = {
+            up: this.#engine.input.isKeyDown('W') || this.#engine.input.isKeyDown('ArrowUp'),
+            down: this.#engine.input.isKeyDown('S') || this.#engine.input.isKeyDown('ArroDown'),
+            left: this.#engine.input.isKeyDown('A') || this.#engine.input.isKeyDown('ArrowLeft'),
+            right: this.#engine.input.isKeyDown('D') || this.#engine.input.isKeyDown('ArrowRight'),
+        }
 
         if (!this.#isGrounded && this.#walkingSound && !this.#walkingSound.paused) {
             this.#walkingSound.pause();
@@ -92,7 +110,7 @@ export class Player extends GameObject {
                 break;
         }
 
-        if (this.#engine.input.isKeyDown("Space") && this.#isGrounded) {
+        if (this.#controls.up && this.#isGrounded) {
             this.#velocity.y = this.#jumpForce
             this.#currentState = PlayerState.JUMPING
             this.#isGrounded = false
@@ -104,12 +122,15 @@ export class Player extends GameObject {
                 this.#isInvencible = false
             }
         }
+        
     }
 
     #handlePhysics(dt: number) {
         this.#applyPhysics(dt)
+        this.position.x += this.#velocity.x * dt;
 
         this.#velocity.x *= 0.9
+
 
         const currentScene = this.#engine.currentScene
         if (!currentScene) return
@@ -132,6 +153,7 @@ export class Player extends GameObject {
             }
         }
         this.#isGrounded = touchingGround
+        
     }
 
     #applyPhysics(dt: number) {
@@ -146,16 +168,16 @@ export class Player extends GameObject {
         if (this.#walkingSound && !this.#walkingSound.paused) {
             this.#walkingSound.pause()
         }
-
-        if (this.#engine.input.getAxis(this.#controls).x !== 0) {
+        const moveDir = (Number(this.#controls.right) - Number(this.#controls.left))
+        if (moveDir !== 0) {
             this.#currentState = PlayerState.WALKING
         }
     }
 
     #handleWalkingState(dt: number) {
-        const moveDir = this.#engine.input.getAxis(this.#controls);
-        const isMoving = moveDir.magnitude() > 0
-        if (moveDir.x !== 0)
+        const moveDir = (Number(this.#controls.right) - Number(this.#controls.left))
+        const isMoving = Math.abs(moveDir) > 0
+        if (moveDir !== 0)
         if (this.#isGrounded && isMoving){
             if (!this.#walkingSound) {
                 this.#walkingSound = this.#engine.audio.play('/assets/passo.ogg', { loop: true, volume: 0.3 })
@@ -168,14 +190,14 @@ export class Player extends GameObject {
             }
         }
 
-        const velocity = Vector2.mul(moveDir, this.#speed * dt)
-        this.position.x += velocity.x
-        if (moveDir.x !== 0){
+        const velocity = moveDir * this.#speed * dt
+        this.position.x += velocity
+        if (moveDir !== 0){
             this.#sprite.play("walk")
             this.#sprite.update(dt)
         }
 
-        if (moveDir.x !== 0) this.#sprite.flipX = moveDir.x < 0
+        if (moveDir !== 0) this.#sprite.flipX = moveDir < 0
 
         if (!isMoving) {
             this.#currentState = PlayerState.IDLE
@@ -183,7 +205,7 @@ export class Player extends GameObject {
     }
 
     #handleJumpingState(dt: number) {
-        const moveDir = this.#engine.input.getAxis(this.#controls);
+        const moveDir = (Number(this.#controls.right) - Number(this.#controls.left))
 
         if (this.isRising) {
             this.#sprite.play("rising")
@@ -195,14 +217,14 @@ export class Player extends GameObject {
             this.#JumpingSound = this.#engine.audio.play('/assets/pulo.ogg', {volume: 0.3})
         }
 
-        this.position.x += moveDir.x * this.#speed * dt
+        this.position.x += moveDir * this.#speed * dt
         
-        if (moveDir.x < 0) this.#sprite.flipX = true
-        else if (moveDir.x > 0) this.#sprite.flipX = false
+        if (moveDir < 0) this.#sprite.flipX = true
+        else if (moveDir > 0) this.#sprite.flipX = false
 
         if (this.#isGrounded) {
             this.#JumpingSound = null
-            this.#currentState = moveDir.x !== 0 ? PlayerState.WALKING : PlayerState.IDLE
+            this.#currentState = moveDir !== 0 ? PlayerState.WALKING : PlayerState.IDLE
         }
 
 

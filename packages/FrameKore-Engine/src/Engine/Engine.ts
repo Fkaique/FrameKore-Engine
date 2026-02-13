@@ -39,6 +39,10 @@ export class Engine {
         this.currentScene.init()
     }
 
+    getScene(){
+        return this.currentScene
+    }
+
     #gameLoop = () => {
         this.time.update()
 

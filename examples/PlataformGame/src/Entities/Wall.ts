@@ -11,7 +11,7 @@ export class Wall extends GameObject {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        ctx.fillStyle = '#555'; // Cinza para parecer parede
+        ctx.fillStyle = '#302416'; // Cinza para parecer parede
         ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
     }
 }

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:engine": "pnpm --filter @framekore-engine/core build",
+    "build:examples": "pnpm --filter plataform-game... build",
+    "dev:game": "pnpm --filter plataform-game dev"
   },
   "keywords": [],
   "author": "",
