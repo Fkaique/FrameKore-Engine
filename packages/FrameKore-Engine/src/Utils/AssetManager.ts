@@ -1,5 +1,5 @@
 export class AssetManager {
-    #BASE_URL: URL = new URL(window.location.href, window.location.origin)
+    #BASE_URL: URL = new URL(window.location.href)
     #storage: Map<string, any> = new Map()
 
     /**
@@ -46,7 +46,7 @@ export class AssetManager {
 
     setBaseURL(url: URL | string) {
         if (typeof url === "string") {
-            this.#BASE_URL = new URL(url, window.location.origin)
+            this.#BASE_URL = new URL(url.replace(/\/*$/, "/"), window.location.origin)
             return
         }
         if (url instanceof URL) {

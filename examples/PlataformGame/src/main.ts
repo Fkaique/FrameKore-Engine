@@ -22,7 +22,7 @@ let trilha: HTMLAudioElement;
 function start(){
     const engine = new Engine(canvas)
     
-    engine.assets.setBaseURL(import.meta.env.BASE_URL)
+    engine.assets.setBaseURL(import.meta.env.BASE_URL + '/')
     engine.assets.loadAudio("assets/trilha.ogg").then(audio=>{
         audio.loop = true
         trilha = audio
