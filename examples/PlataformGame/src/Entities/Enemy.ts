@@ -8,21 +8,39 @@ enum State {
     CHASING
 }
 
+type DropItem = "coin" | "none";
+
 export class Enemy extends GameObject {
     #sprite: Sprite
     #engine: Engine
     target: GameObject | null = null
 
     #velocity = new Vector2(0, 0)
-    #speed = 50
-    #gravity = 800
-    #wanderTime = 0
+    #speed: number
+    #gravity: number
+    #wanderTime: number
     #currentWanderDir = 1
     #isGrounded: boolean = false
 
+    maxHp: number
+    hp: number
+    isInvencible = false
+    isDead = false
+
+    drop: DropItem = "none"
+
+    isBoss: boolean
+
     #state = State.IDLE
 
-    constructor(engine: Engine, x: number, y: number, w: number = 30, h: number = 28) {
+    constructor(engine: Engine, x: number, y: number, w: number = 30, h: number = 28, {
+        hp = 1,
+        speed = 50,
+        gravity = 800,
+        timeStopped = 0,
+        isBoss = false,
+        drop = "none" as DropItem
+    } = {}) {
         super(x, y, w, h)
         this.#engine = engine
         this.#sprite = new Sprite(engine, 'assets/virus.png', 15, 14)
@@ -32,6 +50,20 @@ export class Enemy extends GameObject {
         this.#sprite.addAnimation("falling", 1, 1, 0)
         this.#sprite.setAnimation(1, 0.3)
         this.#sprite.play("idle")
+        this.maxHp = hp
+        this.hp = this.maxHp
+        this.#speed = speed
+        this.#wanderTime = timeStopped
+        this.#gravity = gravity
+        this.isBoss = isBoss
+        this.drop = drop
+    }
+
+    takeDamage(damage: number, timer: number = 1.0) {
+        if (this.isInvencible) return
+        this.hp -= damage
+        this.isInvencible = true
+        this.#wanderTime = timer
     }
 
     update(dt: number): void {
@@ -39,11 +71,11 @@ export class Enemy extends GameObject {
 
         if (!this.#isGrounded) {
             this.#state = State.FALLING
-        } else if (this.target) {
+        } else if (this.target && !this.isInvencible) {
             this.#state = State.CHASING
-        } else if (this.#state === State.FALLING || this.#state === State.CHASING) [
+        } else if (this.#state === State.FALLING || this.#state === State.CHASING) {
             this.#state = State.WALK
-        ]
+        }
 
         let moveDirection = 0
 
@@ -58,6 +90,28 @@ export class Enemy extends GameObject {
 
         this.position.x += this.#velocity.x
 
+        if (this.isInvencible) {
+            this.#state = State.IDLE
+            this.#wanderTime -= dt
+            if (this.#wanderTime <= 0) {
+                this.isInvencible = false
+            }
+        }
+
+        if (this.hp <= 0 && !this.isDead) {
+            if (this.#state !== State.IDLE) {
+                this.#state = State.IDLE;
+                this.#wanderTime = 2.0;
+                this.isInvencible = true; 
+            }
+            
+            this.#wanderTime -= dt;
+            
+            if (this.#wanderTime <= 0) {
+                this.isDead = true;
+            }
+            return;
+        }
         this.#sprite.update(dt);
     }
 
@@ -97,7 +151,7 @@ export class Enemy extends GameObject {
         }
         this.#speed = 100
         this.#sprite.play("chasing");
-        
+
         const diff = this.position.x - this.target!.position.x
 
         if (Math.abs(diff) > 10) {

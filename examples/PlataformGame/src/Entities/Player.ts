@@ -26,7 +26,8 @@ export class Player extends GameObject {
     #walkingSound: HTMLAudioElement | null = null
     #JumpingSound: HTMLAudioElement | null = null
 
-    hp = 10
+    maxHp = 10
+    hp = this.maxHp
     #isInvencible = false
     #invencibilityTimer = 0
 

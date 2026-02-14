@@ -13,6 +13,8 @@ export class Menu extends Scene {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
+        ctx.fillStyle = "#306082"
+        ctx.fillRect(0,0, ctx.canvas.width, ctx.canvas.height)
         ctx.fillStyle = 'white';
         ctx.font = '30px Arial';
         ctx.textAlign = 'center';

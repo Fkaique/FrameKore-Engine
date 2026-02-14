@@ -9,12 +9,13 @@
   box-sizing: border-box;
 }
 
-html, body, .canvas {
+html, body {
   height: 100%;
   overflow: hidden;
 }
 
 body {
+  place-content: center;
   background-image: linear-gradient(to top, var(--color-primary)50%, var(--color-secondary));
 }
 
@@ -35,6 +36,6 @@ canvas {
   position: absolute;
   width: 46px;
   height: 42px;
-  background-image: url(assets/mascote.png);
-  top: 30px;
+  background-image: url(./assets/mascote.png);
+  top: -25px;
 }

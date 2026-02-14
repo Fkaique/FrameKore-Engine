@@ -9,8 +9,12 @@ canvas.height = 800
 canvas.style.width = `${window.innerWidth<innerHeight? window.innerWidth/1.3 : window.innerHeight/1.3}px`
 canvas.style.height =` ${window.innerWidth<innerHeight? window.innerWidth/1.3 : window.innerHeight/1.3}px`
 
-const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+const ctx = canvas.getContext('2d', {
+    alpha: false
+}) as CanvasRenderingContext2D
 
+ctx.fillStyle = "#306082"
+ctx.fillRect(0,0, ctx.canvas.width, ctx.canvas.height)
 ctx.textAlign = "center"
 ctx.textBaseline = "middle"
 ctx.font = "48px Arial"
