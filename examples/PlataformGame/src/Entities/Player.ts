@@ -68,7 +68,7 @@ export class Player extends GameObject {
     constructor(engine: Engine, x: number, y: number, w: number = 46, h: number = 42) {
         super(x, y, w, h)
         this.#engine = engine
-        this.#sprite = new Sprite(engine, "/assets/kore.png", 23, 21)
+        this.#sprite = new Sprite(engine, "assets/kore.png", 23, 21)
         engine.ctx.imageSmoothingEnabled = false
         engine.assets.loadAudio("assets/passo.ogg").then(audio=>{
             this.#walkingSound=audio

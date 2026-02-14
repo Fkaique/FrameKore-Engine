@@ -5,7 +5,7 @@ export class Coin extends GameObject {
 
     constructor(engine: Engine, x: number, y: number, w: number = 30, h: number = 26) {
         super(x,y,w,h)
-        this.#sprite = new Sprite(engine, "/assets/coin.png", 15, 13)
+        this.#sprite = new Sprite(engine, "assets/coin.png", 15, 13)
         this.#sprite.addAnimation('coin', 0, 4, 0.3)
         this.#sprite.setAnimation(4, 0.3)
         this.#sprite.play("coin")

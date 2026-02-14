@@ -25,7 +25,7 @@ export class Enemy extends GameObject {
     constructor(engine: Engine, x: number, y: number, w: number = 30, h: number = 28) {
         super(x, y, w, h)
         this.#engine = engine
-        this.#sprite = new Sprite(engine, '/assets/virus.png', 15, 14)
+        this.#sprite = new Sprite(engine, 'assets/virus.png', 15, 14)
         this.#sprite.addAnimation("idle", 0, 2, 0.3)
         this.#sprite.addAnimation("walk", 1, 2, 0.2)
         this.#sprite.addAnimation("chasing", 1, 2, 0.3)

@@ -23,7 +23,7 @@ export abstract class Scene {
      * Útil para carregar assets, posicionar o player, etc.
      * @example async init() {
             .   console.log("Level 1 Carregado!")
-            .   await this.engine.assets.loadImage('/assets/Lillian.png')
+            .   await this.engine.assets.loadImage('assets/Lillian.png')
             .   this.add(new Player(this.engine, 100,100))
             .   this.add(new Wall(this.engine, 10,300, 200, 32))
         }
