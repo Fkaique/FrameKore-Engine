@@ -6,6 +6,7 @@
   "scripts": {
     "build:engine": "pnpm --filter @framekore-engine/core build",
     "build:examples": "pnpm --filter plataform-game... build",
+    "build:docs": "pnpm --filter docs build",
     "dev:game": "pnpm --filter plataform-game dev"
   },
   "keywords": [],

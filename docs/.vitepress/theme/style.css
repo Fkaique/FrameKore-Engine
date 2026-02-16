@@ -1,0 +1,11 @@
+:root {
+    --vp--max-width: 700px
+}
+
+@media (min-width: 960px) {
+  .VPImage.image-src {
+    width: 800px !important;
+    height: auto !important;
+    max-width: none !important;
+  }
+}
