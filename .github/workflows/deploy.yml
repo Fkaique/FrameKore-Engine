@@ -32,7 +32,7 @@ jobs:
     - name: Build Engine and Examples
       run: | 
         pnpm -r --sort --filter @framekore-engine/core build
-        pnpm --filter plataform-game build --base "${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER}"
+        pnpm --filter plataform-game build --base "${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER}/examples/platform/"
     - name: Build Docs
       run: pnpm build:docs
     

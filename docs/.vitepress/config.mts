@@ -4,6 +4,7 @@ import typedocSidebar from '../api/typedoc-sidebar.json';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: '/FrameKore-Engine/',
   title: "FrameKore",
   description: "Engine de Jogos 2D",
   head: [
