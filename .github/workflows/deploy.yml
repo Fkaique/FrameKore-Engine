@@ -34,7 +34,7 @@ jobs:
         pnpm -r --sort --filter @framekore-engine/core build
         pnpm --filter plataform-game build --base "${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER}"
     - name: Build Docs
-      run: pnpm docs:build
+      run: pnpm build:docs
     
     - name: Organizar Arquivos para Deploy
       run: |
