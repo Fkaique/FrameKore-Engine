@@ -16,25 +16,27 @@ A FrameKore busca "agilizar" a criação do seu jogo com uma biblioteca simples,
 
 # Aqui um exemplo da estrutura inicial
 
-```ts
+```js
 import {Engine} from "@framekore-engine/core"
 
-const canvas = getElementById('canvas') as HTMLCanvasElement
+const canvas = getElementById('canvas')
 
 const engine = new Engine(canvas)
 
-engine.setScene(new Level(engine))
+class Level extends Scene {
 
-export class Level extends Scene {
-    public init(): void { 
+    init() { 
     }
 
-    public update(dt: number): void {
+    update(dt) {
     }
 
-    public draw(ctx: CanvasRenderingContext2D): void {
+    draw(ctx) {
         ctx.fillStyle = "white"
         ctx.fillText("Olá FrameKore", canvas.width/2, canvas.height/2)
     }
 }
+
+engine.setScene(new Level(engine))
+
 ```

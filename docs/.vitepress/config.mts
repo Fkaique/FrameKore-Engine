@@ -1,5 +1,6 @@
 
 import { defineConfig } from 'vitepress'
+import typedocSidebar from '../api/typedoc-sidebar.json';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -31,7 +32,11 @@ export default defineConfig({
           { text: 'Engine', link: '/documentacao/doc-engine' },
           { text: 'GameObjects', link: '/documentacao/doc-gameobjects' }
         ]
-      }
+      },
+      {
+        text: 'Referencia da API',
+        items: typedocSidebar,
+      },
     ],
 
     socialLinks: [

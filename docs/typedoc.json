@@ -1,0 +1,8 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+    "entryPoints": ["../packages/FrameKore-Engine/src/index.ts"],
+    "tsconfig": "../packages/FrameKore-Engine/tsconfig.json",
+    "parametersFormat": "table",
+    "propertiesFormat": "table"
+}
