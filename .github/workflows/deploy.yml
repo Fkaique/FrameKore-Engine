@@ -33,11 +33,22 @@ jobs:
       run: | 
         pnpm -r --sort --filter @framekore-engine/core build
         pnpm --filter plataform-game build --base "${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER}"
+    - name: Build Docs
+      run: pnpm docs:build]
+    
+    - name: Organizar Arquivos para Deploy
+      run: |
+        mkdir -p deploy-dist
+        cp -r ./docs/.vitepress/dist/* deploy-dist/
+        
+        mkdir -p deploy-dist/examples/platform
+        
+        cp -r ./examples/PlataformGame/dist/* deploy-dist/examples/platform/
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with: 
-        path: './examples/PlataformGame/dist'
+        path: './deploy-dist'
 
   deploy:
 

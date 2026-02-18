@@ -4,28 +4,18 @@ import { RenderLayer } from "./Scene";
 export abstract class GameObject {
     /**
      * camada de renderização em que este objeto será desenhado
-     * @example RenderLayer {
-    .   Background = 0,
-    .   Environment = 10,
-    .   Character = 20,
-    .   Foreground = 30,
-    .   UI = 40
-    }
      */
-    layer = RenderLayer.Environment
+    layer = RenderLayer.Default
     /**
-     * Posição do objeto no jogo
-     * @example object.position = new Vector2(0,0)
+     * Posição do objeto no jogo usando os eixos x e y
      */
     position: Vector2
     /**
-     * tamanho do objeto no jogo
-     * @example object.size = new Vector2(32,32)
+     * Tamanho do objeto no jogo usando os eixos x e y
      */
     size: Vector2
     /**
      * Define se o objeto existe ou não
-     * @example object.active = false
      */
     active: boolean = true
 
@@ -35,28 +25,28 @@ export abstract class GameObject {
     }
 
     /**
-     * Retorna a posição a esquerda do objeto 
+     * Retorna a posição a esquerda do Objeto 
      */
     get left() { return this.position.x }
     /**
-     * Retorna a posição a direita do objeto 
+     * Retorna a posição a direita do Objeto 
      */
     get right() { return this.position.x + this.size.x }
     /**
-     * Retorna a posição a cima do objeto 
+     * Retorna a posição a cima do Objeto 
      */
     get top() { return this.position.y }
     /**
-     * Retorna a posição a baixo do objeto 
+     * Retorna a posição a baixo do Objeto 
      */
     get bottom() { return this.position.y + this.size.y }
     /**
-     * update: Processa a lógica da cena.
+     * update: Processa a lógica do Objeto.
      * @param dt Delta Time vindo da FKEngine.
      */
     abstract update(dt: number): void
     /**
-     * Renderização do objeto
+     * Renderização do Objeto
      * @param ctx 
      */
     abstract draw(ctx: CanvasRenderingContext2D): void

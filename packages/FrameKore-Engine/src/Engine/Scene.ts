@@ -1,17 +1,21 @@
 import type { Engine } from "./Engine";
 import type { GameObject } from "./GameObject";
-
+/**
+ * Padrões de Camadas de Renderização.
+ */
 export enum RenderLayer {
+    /** Camada de fundo, Renderiza primeiro. */
     Background = 0,
-    Environment = 10,
-    Character = 20,
-    Foreground = 30,
+    /** Camada Padrão. */
+    Default = 20,
+    /** Camada mais a frente. */
     UI = 40
 }
 
 export abstract class Scene {
+    /**Referencia da Engine */
     protected engine: Engine
-    
+    /**Entidades da Cena */
     protected entities: GameObject[] = []
 
     constructor(engine: Engine){
@@ -19,7 +23,7 @@ export abstract class Scene {
     }
 
     /**
-     * init: Chamado uma única vez quando a cena é definida como ativa.
+     * init: Chamado uma única vez quando a cena é definida como ativada.
      * Útil para carregar assets, posicionar o player, etc.
      * @example async init() {
             .   console.log("Level 1 Carregado!")

@@ -35,7 +35,12 @@ function start(){
         trilha.play()
     })
     engine.setScene(new Menu(engine))
+    engine.assets.loadImage
+    engine.ctx
+    engine.getScene()
+    engine.input
 }
+
 
 window.addEventListener('click', start, {
     once: true

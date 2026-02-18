@@ -4,14 +4,10 @@ import type { GameObject } from "./GameObject";
 export class Camera2D {
     /**
      * Posição da camera
-     * @example camera.position = new Vector2(0,0) 
      */
     position: Vector2 = new Vector2(0,0)
     /**
      * Objeto que será seguido pela camera
-     * @example
-     * const player = new Player(...)
-     * camera.target = player
      */
     target: GameObject | null = null
     /**
@@ -28,20 +24,10 @@ export class Camera2D {
     height: number
     /**
      * Limita o mapa em que a camera pode se mover em um retangulo
-     * @example camera.bounds = {
-        .   x: 0,
-        .   y: 0,
-        .   width: 1600,
-        .   height: 600
-        }
      */
     bounds: {x: number, y: number, width: number, height: number} | null = null
     /**
      * Cria uma borda invisivel na janela que move a camera quando o target tenta ultrapassa-la
-     * @example 
-     * horizontal = 200
-     * vertival = 200
-     * camera.border = new Vector2(horizontal, vertical) 
      */
     border: Vector2 | null = null
 
@@ -51,7 +37,7 @@ export class Camera2D {
     }
     /**
      * update: Processa a lógica da cena.
-     * @param dt Delta Time vindo da FKEngine.
+     * @param dt Delta Time vindo da Engine.
      */
     update(dt: number) {
         if (!this.target) return

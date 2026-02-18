@@ -2,7 +2,12 @@ import type { GameObject } from "./GameObject";
 
 export class Physics {
     /**
-     * checkCollision: Verifica se dois GameObjects estão colidindo
+     * Verifica se dois GameObjects estão colidindo
+     * @example
+     *```ts
+     *if (Physics.checkCollision(Player, Enemy))
+     *
+     *```
     */
     static checkCollision(a: GameObject, b: GameObject): boolean {
         return (
@@ -13,7 +18,7 @@ export class Physics {
         );
     }
     /**
-     * resolveCollision: verifica a colisão entre dois objetos: GameObject
+     * Resolve a colisão física entre dois GameObjects
      * @param object1 GameObject
      * @param object2 GameObject 
      */

@@ -1,5 +1,4 @@
 {
-  "name": "FKEngine",
   "version": "0.0.2-8",
   "description": "",
   "main": "index.js",
@@ -7,6 +6,7 @@
     "build:engine": "pnpm --filter @framekore-engine/core build",
     "build:examples": "pnpm --filter plataform-game... build",
     "build:docs": "pnpm --filter docs build",
+    "docs:dev": "pnpm --filter docs docs:dev",
     "dev:game": "pnpm --filter plataform-game dev"
   },
   "keywords": [],
