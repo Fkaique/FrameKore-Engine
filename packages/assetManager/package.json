@@ -1,0 +1,6 @@
+{
+  "name": "@framekore/asset-manager",
+  "version": "0.0.1",
+  "description": "pacote controlador de assets",
+  "main": "src/index.js"
+}

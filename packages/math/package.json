@@ -1,0 +1,6 @@
+{
+  "name": "@framekore/math",
+  "version": "0.0.1",
+  "description": "pacote de matematica da engine",
+  "main": "./src/index.js"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "@framekore/core",
+  "version": "0.0.1",
+  "description": "core da engine",
+  "main": "./src/index.js"
+}

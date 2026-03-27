@@ -1,0 +1,9 @@
+{
+  "name": "@framekore/input-manager",
+  "version": "0.0.1",
+  "description": "pacote controlador de input",
+  "main": "./src/index.js",
+  "dependencies": {
+    "@framekore/core": "workspace:*"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@framekore/physics2d",
+  "version": "0.0.1",
+  "description": "pacote de fisica 2d da engine",
+  "main": "./src/index.js",
+  "dependencies": {
+    "@framekore/core": "workspace:*",
+    "@framekore/math": "workspace:*",
+    "@framekore/transform2d": "workspace:*"
+  }
+}

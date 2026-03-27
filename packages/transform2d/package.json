@@ -1,0 +1,11 @@
+{
+  "name": "@framekore/transform2d",
+  "version": "0.0.1",
+  "description": "pacote de transformações 2d da engine",
+  "type": "module",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@framekore/core": "workspace:*",
+    "@framekore/math": "workspace:*"
+  }
+}

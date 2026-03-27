@@ -1,11 +1,12 @@
+import type { GameObject } from "./gameObject"
+
 export abstract class Scene {
-    protected objects: { update(delta: number): void }[] = []
+    protected objects: GameObject[] = []
 
     onEnter?(): void
     onExit?(): void
-    render?(): void
 
-    add(obj: { update(delta: number): void }) {
+    add(obj: GameObject) {
         this.objects.push(obj)
     }
 
@@ -15,4 +16,7 @@ export abstract class Scene {
         }
     }
 
+    getObjects(){
+        return this.objects
+    }
 }

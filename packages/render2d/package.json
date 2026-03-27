@@ -1,0 +1,10 @@
+{
+  "name": "@framekore/render2d",
+  "version": "0.0.1",
+  "description": "pacote de renderização 2d da engine",
+  "main": "./src/index.js",
+  "dependencies": {
+    "@framekore/core": "workspace:*",
+    "@framekore/transform2d": "workspace:*"
+  }
+}
