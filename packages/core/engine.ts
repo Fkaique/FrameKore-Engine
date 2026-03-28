@@ -6,9 +6,10 @@ export interface EnginePlugin {
     name: string
     setup(engine: Engine): void
     destroy?(engine: Engine): void
-    
+
     render?(scene: Scene): void
     update?(engine: Engine, delta: number): void
+    fixedUpdate?(engine: Engine, delta: number): void
 
     onComponentAdded?(component: Component): void
     onComponentRemoved?(component: Component): void
@@ -23,6 +24,7 @@ export class Engine {
     constructor() {
         this.#ticker = new Ticker()
         this.#ticker.add(this.#update, Priority.UPDATE)
+        this.#ticker.add(this.#fixedUpdate, Priority.FIXED_UPDATE)
         this.#ticker.add(this.#render, Priority.RENDER)
     }
 
@@ -30,8 +32,8 @@ export class Engine {
         this.#resources.set(key, resource)
         return this
     }
-    
-    getResource<T>(key: new (...args:any[]) => T): T
+
+    getResource<T>(key: new (...args: any[]) => T): T
     getResource<T>(key: PropertyKey): T
     getResource(key: any) {
         if (!this.#resources.has(key)) return
@@ -47,11 +49,23 @@ export class Engine {
         }
     }
 
+    #fixedUpdate = (delta: number) => {
+        this.#currentScene?.fixedUpdate?.(delta)
+
+        for (const plugin of this.#plugins.values()) {
+            plugin.fixedUpdate?.(this, delta)
+        }
+    }
+
     // Scene
 
     setScene(cena: Scene) {
         this.#currentScene?.onExit?.()
         this.#currentScene = cena
+        this.#currentScene.engine = this
+        for (const obj of this.#currentScene.getObjects()) {
+            obj.engine = this
+        }
         this.#currentScene.onEnter?.()
     }
 

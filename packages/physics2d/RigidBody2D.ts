@@ -6,6 +6,13 @@ export class RigidBody2D extends Component{
     mass = 1
     useGravity = true
 
+    touching = {
+        top: false,
+        bottom: false,
+        left: false,
+        right: false
+    }
+
     applyForce(force: Vector2) {
         this.velocity.x += force.x / this.mass
         this.velocity.y += force.y / this.mass

@@ -22,24 +22,28 @@ export const physics2d = definePlugin(() => {
       engine.ticker.add((delta) => {
         if (!engine.currentScene) return;
         physics.step(delta);
-      }, Priority.UPDATE);
+      }, Priority.FIXED_UPDATE);
     },
     onComponentAdded(component) {
-      const engine = component.gameObject.engine;
+      const gameObject = component.gameObject;
+      if (!gameObject || !gameObject.engine)
+        return
       if (component instanceof RigidBody2D) {
-        rigidBodies.get(engine)?.add(component);
+        rigidBodies.get(gameObject.engine)?.add(component);
       }
       if (component instanceof BoxCollide2D) {
-        boxColliders.get(engine)?.add(component);
+        boxColliders.get(gameObject.engine)?.add(component);
       }
     },
     onComponentRemoved(component) {
-      const engine = component.gameObject.engine;
+      const gameObject = component.gameObject;
+      if (!gameObject || !gameObject.engine)
+        return
       if (component instanceof RigidBody2D) {
-        rigidBodies.get(engine)?.delete(component);
+        rigidBodies.get(gameObject.engine)?.delete(component);
       }
       if (component instanceof BoxCollide2D) {
-        boxColliders.get(engine)?.delete(component);
+        boxColliders.get(gameObject.engine)?.delete(component);
       }
     },
   };
@@ -49,7 +53,7 @@ export const BOX_COLLIDE_2D = Symbol("boxCollide2d");
 export const RIGID_BODY_2D = Symbol("rigidBody2d");
 
 export class Physics2D {
-  gravity: Vector2 = new Vector2(0, 50);
+  gravity: Vector2 = new Vector2(0, 1500);
 
   #engine: Engine;
 
@@ -126,36 +130,82 @@ export class Physics2D {
       if (rbA && rbB) {
         if (overlapX < overlapY) {
           if (dx > 0) {
-            transformA.position.x += overlapX / 2;
-            transformB.position.x += overlapX / 2;
-            rbA.velocity.x = 0
-            rbB.velocity.x = 0
+            transformA.position.x += overlapX / 2
+            transformB.position.x -= overlapX / 2
+
+            rbA.touching.left = true
+            rbB.touching.right = true
           } else {
-            transformA.position.y += overlapY / 2;
-            transformB.position.y += overlapY / 2;
-            rbA.velocity.y = 0
-            rbB.velocity.y = 0
+            transformA.position.x -= overlapX / 2
+            transformB.position.x += overlapX / 2
+
+            rbA.touching.right = true
+            rbB.touching.left = true
           }
+
+          rbA.velocity.x = 0
+          rbB.velocity.x = 0
+
+        } else {
+          if (dy > 0) {
+            transformA.position.y += overlapY / 2
+            transformB.position.y -= overlapY / 2
+
+            rbA.touching.top = true
+            rbB.touching.bottom = true
+          } else {
+            transformA.position.y -= overlapY / 2
+            transformB.position.y += overlapY / 2
+
+            rbA.touching.bottom = true
+            rbB.touching.top = true
+          }
+
+          rbA.velocity.y = 0
+          rbB.velocity.y = 0
         }
       } else if (rbA) {
         if (overlapX < overlapY) {
-          if (dx > 0) transformA.position.x += overlapX;
-          else transformA.position.x -= overlapX;
+          if (dx > 0) {
+            transformA.position.x += overlapX;
+            rbA.touching.left = true
+          }
+          else {
+            transformA.position.x -= overlapX;
+            rbA.touching.right = true
+          }
           rbA.velocity.x = 0
         } else {
-          if (dy > 0) transformA.position.y += overlapY;
-          else transformA.position.y -= overlapY;
+          if (dy > 0) {
+            transformA.position.y += overlapY;
+            rbA.touching.top = true
+          }
+          else {
+            transformA.position.y -= overlapY;
+            rbA.touching.bottom = true
+          }
           rbA.velocity.y = 0
         }
-
       } else if (rbB) {
         if (overlapX < overlapY) {
-          if (dx > 0) transformB.position.x += overlapX;
-          else transformB.position.x -= overlapX;
+          if (dx > 0) {
+            transformB.position.x += overlapX;
+            rbB.touching.left = true
+          }
+          else {
+            transformB.position.x -= overlapX;
+            rbB.touching.right = true
+          }
           rbB.velocity.x = 0
         } else {
-          if (dy > 0) transformB.position.y += overlapY;
-          else transformB.position.y -= overlapY;
+          if (dy > 0) {
+            transformB.position.y += overlapY;
+            rbB.touching.top = true
+          }
+          else {
+            transformB.position.y -= overlapY;
+            rbB.touching.bottom = true
+          }
           rbB.velocity.y = 0
         }
       }
@@ -168,10 +218,17 @@ export class Physics2D {
     if (!rbSet || !colSet) return;
 
     for (const rb of rbSet) {
+      rb.touching.top = false
+      rb.touching.bottom = false
+      rb.touching.left = false
+      rb.touching.right = false
+      if (!rb.gameObject)
+        continue
       const transform = rb.gameObject.getComponent<Transform2D>(TRANSFORM_2D);
-      if (!transform) continue;
+      if (!transform)
+        continue;
 
-      if (rb.useGravity) rb.velocity.y += this.gravity.y;
+      if (rb.useGravity) rb.velocity.y += this.gravity.y * delta;
 
       transform.position.x += rb.velocity.x * delta;
       transform.position.y += rb.velocity.y * delta;
@@ -182,8 +239,10 @@ export class Physics2D {
 
       for (const collider of colSet) {
         const objB = collider.gameObject
-        if (objA === objB) continue
-
+        if (objA === objB)
+          continue
+        if (!objA || !objB)
+          continue
         if (this.checkCollision(objA, objB)) {
           this.resolveCollision(objA, objB);
         }

@@ -1,14 +1,14 @@
 import { definePlugin, Engine } from "../core/engine";
 import type { GameObject } from "../core/gameObject";
 import type { Scene } from "../core/scene";
-import { Priority, type TickerDisposer } from "../core/utils/ticker";
+import { type TickerDisposer } from "../core/utils/ticker";
 import { Sprite2D } from "./sprite2D";
 import { Texture } from "./texture";
 import { Transform2D, TRANSFORM_2D } from "../transform2d/transform2D";
 
 const sprites = new WeakMap<Engine, Set<Sprite2D>>()
 
-export const render2d = definePlugin((canvas: HTMLCanvasElement)=>{
+export const render2d = definePlugin((canvas: HTMLCanvasElement) => {
     let renderDisposer: TickerDisposer | undefined
     return {
         name: "render2d",
@@ -16,19 +16,27 @@ export const render2d = definePlugin((canvas: HTMLCanvasElement)=>{
             sprites.set(engine, new Set())
             const manager = new RenderManager2D(canvas)
             engine.setResource(RenderManager2D, manager)
-            renderDisposer = engine.ticker.add(()=>manager.render(engine.currentScene), Priority.RENDER)
         },
         onComponentAdded(component) {
-            const engine = component.gameObject.engine
+            const gameObject = component.gameObject
+            if (!gameObject || !gameObject.engine) return
+
             if (component instanceof Sprite2D) {
-                sprites.get(engine)?.add(component)
+                sprites.get(gameObject.engine)?.add(component)
             }
         },
         onComponentRemoved(component) {
-            const engine = component.gameObject.engine
+            const gameObject = component.gameObject
+            if (!gameObject || !gameObject.engine) return
+
             if (component instanceof Sprite2D) {
-                sprites.get(engine)?.delete(component)
+                sprites.get(gameObject.engine)?.delete(component)
             }
+        },
+        render(scene) {
+            const manager = RenderManager2D.getFromScene(scene);
+            manager.render(scene);
+            
         },
         destroy() {
             renderDisposer?.dispose()
@@ -42,31 +50,42 @@ export const SPRITE_2D = Symbol("sprite2d")
 export class RenderManager2D {
     canvas: HTMLCanvasElement
     ctx: CanvasRenderingContext2D
-    constructor(canvas: HTMLCanvasElement) { 
+    #drawQueue: Array<(ctx: CanvasRenderingContext2D) => void> = []
+    #antialiasing: boolean = false
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
-        const ctx = canvas.getContext("2d") 
+        const ctx = canvas.getContext("2d")
         if (!ctx) {
             throw new Error("Canvas2d não disponivel.")
         }
         this.ctx = ctx
+        ctx.imageSmoothingEnabled = this.antialiasing
     }
 
-    static get(engine: Engine): RenderManager2D{
+    set antialiasing(value: boolean) {
+        this.ctx.imageSmoothingEnabled = value
+    } 
+
+    static get(engine: Engine): RenderManager2D {
         const render = engine.getResource(RenderManager2D)
-        if (!render) 
+        if (!render)
             throw new Error("RenderManager2D não foi adicionado à Engine")
         return render
     }
-    
+
     getCanvasImage(x: number, y: number, w: number, h: number) {
         const newCanvas = document.createElement('canvas')
         newCanvas.width = w
         newCanvas.height = h
 
         const newCtx = newCanvas.getContext('2d')!
-        newCtx.drawImage(this.canvas,x,y,w,h,0,0,w,h)
+        newCtx.drawImage(this.canvas, x, y, w, h, 0, 0, w, h)
 
         return new Texture(newCanvas)
+    }
+
+    static getFromScene(scene: Scene): RenderManager2D {
+        return this.get(scene.engine);
     }
 
     createTexture(image: HTMLImageElement | HTMLCanvasElement) {
@@ -74,7 +93,14 @@ export class RenderManager2D {
     }
 
     draw(callback: (ctx: CanvasRenderingContext2D) => void) {
-        callback(this.ctx)
+        this.#drawQueue.push(callback)
+    }
+
+    #flushDrawQueue() {
+        for (const draw of this.#drawQueue) {
+            draw(this.ctx)
+        }
+        this.#drawQueue.length = 0
     }
 
     #renderSprite(transform: Transform2D, sprite: Sprite2D) {
@@ -84,7 +110,7 @@ export class RenderManager2D {
 
         this.ctx.translate(transform.position.x, transform.position.y)
         this.ctx.rotate(transform.rotation)
-        this.ctx.scale(transform.scaleX,transform.scaleY)
+        this.ctx.scale(transform.scaleX, transform.scaleY)
 
         this.ctx.drawImage(
             sprite.texture.image,
@@ -94,24 +120,24 @@ export class RenderManager2D {
         this.ctx.restore()
     }
 
-    #renderObjects(obj: GameObject){
+    #renderObjects(obj: GameObject) {
         const transform = obj.getComponent<Transform2D>(TRANSFORM_2D)
         const sprite = obj.getComponent<Sprite2D>(SPRITE_2D)
 
-        if (!transform || !sprite || !sprite.frame) return 
+        if (!transform || !sprite || !sprite.frame) return
 
         this.#renderSprite(transform, sprite)
     }
 
     render(scene?: Scene) {
-        this.ctx.clearRect(0,0,this.canvas.width, this.canvas.height)
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         if (!scene) return
-
-        const objects = scene.getObjects()
         
+        const objects = scene.getObjects()
+
         for (const obj of objects) {
             this.#renderObjects(obj)
-
         }
+        this.#flushDrawQueue()
     }
 }

@@ -27,38 +27,39 @@ export class AssetManager {
         type: K,
         src: string | URL
     ): Promise<AssetMap[K]> {
-
         if (this.#cache.has(key)) {
-            return this.#cache.get(key) as AssetMap[K]
+            return await this.#cache.get(key) as AssetMap[K];
         }
 
-        const url = typeof src === "string" ? src : src.toString()
-        let asset: AssetMap[K]
-        const promise = (async () => {
+        const url = typeof src === "string" ? src : src.toString();
+
+        const promise = (async (): Promise<AssetMap[K]> => {
             switch (type) {
                 case "image":
-                    asset = await this.#loadImage(url) as AssetMap[K]
-                    break
-    
-                case "audio":
-                    asset = await this.#loadAudio(url) as AssetMap[K]
-                    break
-    
-                case "json":
-                    asset = await this.#loadJSON(url) as AssetMap[K]
-                    break
-                default:
-                    throw new Error(`Tipo de asset não suportado: ${type}`)
-            }
-        })()
+                    return await this.#loadImage(url) as AssetMap[K];
 
-        this.#cache.set(key, promise)
-        return promise as Promise<AssetMap[K]>
+                case "audio":
+                    return await this.#loadAudio(url) as AssetMap[K];
+
+                case "json":
+                    return await this.#loadJSON(url) as AssetMap[K];
+
+                default:
+                    throw new Error(`Tipo de asset não suportado: ${type}`);
+            }
+        })();
+
+        this.#cache.set(key, promise);
+
+        const asset = await promise;
+        this.#cache.set(key, asset);
+
+        return asset;
     }
-    
-    static get(engine: Engine): AssetManager{
+
+    static get(engine: Engine): AssetManager {
         const manager = engine.getResource(AssetManager)
-        if (!manager) 
+        if (!manager)
             throw new Error("AssetManager não foi adicionado à Engine")
         return manager
     }
