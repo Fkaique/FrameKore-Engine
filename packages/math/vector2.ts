@@ -1,25 +1,25 @@
 export class Vector2 {
     x: number
     y: number
-    constructor(x:number = 0, y:number = 0) {
+    constructor(x: number = 0, y: number = 0) {
         this.x = x
         this.y = y
     }
-    
-    static add(v1: Vector2, v2: Vector2){
-        return new Vector2(v1.x+v2.x,v1.y+v2.y)
+
+    static add(v1: Vector2, v2: Vector2) {
+        return new Vector2(v1.x + v2.x, v1.y + v2.y)
     }
 
-    static sub(v1: Vector2, v2: Vector2){
-        return new Vector2(v1.x-v2.x,v1.y-v2.y)
+    static sub(v1: Vector2, v2: Vector2) {
+        return new Vector2(v1.x - v2.x, v1.y - v2.y)
     }
 
-    static mul(vector: Vector2, scalar: number){
-        return new Vector2(vector.x*scalar,vector.y*scalar)
+    static mul(vector: Vector2, scalar: number) {
+        return new Vector2(vector.x * scalar, vector.y * scalar)
     }
 
-    static div(vector: Vector2, scalar: number){
-        return new Vector2(vector.x/scalar,vector.y/scalar)
+    static div(vector: Vector2, scalar: number) {
+        return new Vector2(vector.x / scalar, vector.y / scalar)
     }
     /**
      * Calcula o Produto Escalar entre um vetor e outro.
@@ -49,22 +49,22 @@ export class Vector2 {
         );
     }
 
-    add(v: Vector2){
+    add(v: Vector2) {
         this.x += v.x
         this.y += v.y
     }
 
-    sub(v: Vector2){
+    sub(v: Vector2) {
         this.x -= v.x
         this.y -= v.y
     }
-    
-    mul(scalar: number){
+
+    mul(scalar: number) {
         this.x *= scalar
         this.y *= scalar
     }
-    
-    div(scalar: number){
+
+    div(scalar: number) {
         this.x /= scalar
         this.y /= scalar
     }
@@ -89,8 +89,8 @@ export class Vector2 {
      * Retorna o quadrado da magnitude.
      * Use para comparações de distância: é muito mais performático que magnitude().
     */
-    magnitudeSq(){
-        return this.x*this.x + this.y*this.y
+    magnitudeSq() {
+        return this.x * this.x + this.y * this.y
     }
     /**
      * Retorna a magnitude (comprimento) do vetor.
@@ -99,21 +99,32 @@ export class Vector2 {
     magnitude(): number {
         return Math.sqrt(this.magnitudeSq());
     }
-
+    /**
+     * Normaliza o vetor (mantém direção e transforma em comprimento 1).
+     * Se o vetor for (0,0), retorna um vetor zero para evitar divisão por 0.
+     */
     normalize(): Vector2 {
-        const mag = this.magnitude();
-        return mag > 0 ? Vector2.mul(this, 1 / mag) : new Vector2(0, 0);
+        const mag = this.magnitude()
+
+        if (mag === 0) {
+            return new Vector2(0, 0)
+        }
+
+        return new Vector2(
+            this.x / mag,
+            this.y / mag
+        )
     }
 
-    clone(): Vector2{
-        return new Vector2(this.x,this.y)
+    clone(): Vector2 {
+        return new Vector2(this.x, this.y)
     }
     /**
      * Interpolação Linear entre este vetor e um destino.
      * @param target O vetor de destino.
      * @param alpha Valor entre 0 e 1 (0 = início, 1 = fim, 0.5 = meio).
     */
-    lerp(target: Vector2, alpha: number): this{
+    lerp(target: Vector2, alpha: number): this {
         this.x += (target.x - this.x) * alpha
         this.y += (target.y - this.y) * alpha
         return this

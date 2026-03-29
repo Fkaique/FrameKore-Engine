@@ -90,6 +90,17 @@ export class Physics2D {
       boundA.top < boundB.bottom
     );
   }
+
+  /**
+   * Verifica se dois colliders podem interagir com base em layer e mask.
+   */
+  canCollide(boxA: BoxCollide2D, boxB: BoxCollide2D): boolean {
+    const aHitsB = (boxA.mask & boxB.layer) !== 0
+    const bHitsA = (boxB.mask & boxA.layer) !== 0
+
+    return aHitsB && bHitsA
+  }
+
   /**
    * Resolve a colisão física entre dois GameObjects
    * @param object1 GameObject
@@ -211,12 +222,18 @@ export class Physics2D {
       }
     }
   }
-
+  /**
+   * Atualiza a física dos corpos e resolve colisões separando por eixo.
+   */
   step(delta: number) {
     const rbSet = rigidBodies.get(this.#engine);
     const colSet = boxColliders.get(this.#engine);
     if (!rbSet || !colSet) return;
-
+    
+    for (const collider of colSet) {
+      collider.colliding = false
+    }
+    
     for (const rb of rbSet) {
       rb.touching.top = false
       rb.touching.bottom = false
@@ -228,25 +245,96 @@ export class Physics2D {
       if (!transform)
         continue;
 
-      if (rb.useGravity) rb.velocity.y += this.gravity.y * delta;
+      if (rb.useGravity)
+        rb.velocity.y += this.gravity.y * delta;
 
       transform.position.x += rb.velocity.x * delta;
+      this.resolveCollisionsX(rb, colSet)
       transform.position.y += rb.velocity.y * delta;
+      this.resolveCollisionsY(rb, colSet)
     }
+  }
+  /**
+   * Resolve colisões no eixo X para um rigid body.
+   */
+  resolveCollisionsX(rb: RigidBody2D, colSet: Set<BoxCollide2D>) {
+    const objA = rb.gameObject
+    if (!objA)
+      return
+    const transformA = objA.getComponent<Transform2D>(TRANSFORM_2D)
+    const boxA = objA.getComponent<BoxCollide2D>(BOX_COLLIDE_2D)
 
-    for (const rb of rbSet) {
-      const objA = rb.gameObject;
+    if (!transformA || !boxA)
+      return
 
-      for (const collider of colSet) {
-        const objB = collider.gameObject
-        if (objA === objB)
-          continue
-        if (!objA || !objB)
-          continue
-        if (this.checkCollision(objA, objB)) {
-          this.resolveCollision(objA, objB);
-        }
+    for (const collider of colSet) {
+      const objB = collider.gameObject
+      if (!objB || objA === objB) continue
+
+      const transformB = objB.getComponent<Transform2D>(TRANSFORM_2D)
+      const boxB = objB.getComponent<BoxCollide2D>(BOX_COLLIDE_2D)
+      if (!transformB || !boxB) continue
+      if (!this.canCollide(boxA, boxB)) continue
+      if (!this.checkCollision(objA, objB)) continue
+
+      if (boxA.isTrigger || boxB.isTrigger) {
+        if (boxA.isTrigger)
+          boxA.colliding = true
+        if (boxB.isTrigger)
+          boxB.colliding = true
+        continue
       }
+
+      const boundsA = boxA.getBounds(transformA)
+      const boundsB = boxB.getBounds(transformB)
+
+      if (rb.velocity.x > 0) {
+        transformA.position.x -= boundsA.right - boundsB.left
+        rb.touching.right = true
+      } else if (rb.velocity.x < 0) {
+        transformA.position.x += boundsB.right - boundsA.left
+        rb.touching.left = true
+      }
+
+      rb.velocity.x = 0
+    }
+  }
+
+  /**
+   * Resolve colisões no eixo Y para um rigid body.
+   */
+  resolveCollisionsY(rb: RigidBody2D, colSet: Set<BoxCollide2D>) {
+    const objA = rb.gameObject
+    if (!objA) return
+
+    const transformA = objA.getComponent<Transform2D>(TRANSFORM_2D)
+    const boxA = objA.getComponent<BoxCollide2D>(BOX_COLLIDE_2D)
+    if (!transformA || !boxA) return
+
+    for (const collider of colSet) {
+      const objB = collider.gameObject
+      if (!objB || objA === objB) continue
+
+      const transformB = objB.getComponent<Transform2D>(TRANSFORM_2D)
+      const boxB = objB.getComponent<BoxCollide2D>(BOX_COLLIDE_2D)
+      if (!transformB || !boxB) continue
+      if (!this.canCollide(boxA, boxB)) continue
+      if (!this.checkCollision(objA, objB)) continue
+      if (boxA.isTrigger || boxB.isTrigger) {
+        continue
+      }
+      const boundsA = boxA.getBounds(transformA)
+      const boundsB = boxB.getBounds(transformB)
+
+      if (rb.velocity.y > 0) {
+        transformA.position.y -= boundsA.bottom - boundsB.top
+        rb.touching.bottom = true
+      } else if (rb.velocity.y < 0) {
+        transformA.position.y += boundsB.bottom - boundsA.top
+        rb.touching.top = true
+      }
+
+      rb.velocity.y = 0
     }
   }
 }
