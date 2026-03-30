@@ -82,6 +82,8 @@ export class AssetManager {
 
 
     #loadImage(src: string): Promise<HTMLImageElement> {
+        console.log(src);
+        
         return new Promise((resolve, reject) => {
             const img = new Image()
             img.src = src
