@@ -43,6 +43,8 @@ const player = new GameObject()
 player.addComponent(TRANSFORM_2D, new Transform2D())
 player.addComponent(SPRITE_2D, new Sprite2D(texture))
 player.addComponent(BOX_COLLIDE_2D, new BoxCollide2D(32, 32))
+
+player.getComponent<BoxCollide2D>(BOX_COLLIDE_2D)
 ```
 
 ---
