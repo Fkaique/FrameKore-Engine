@@ -2,7 +2,7 @@ import { AssetManager } from "@framekore/asset-manager";
 import { Engine, GameObject } from "@framekore/core";
 import playerImage from "../assets/kore.png"
 import { RenderManager2D, Sprite2D, SPRITE_2D, Texture } from "@framekore/render2d";
-import { Transform2D, TRANSFORM_2D } from "@framekore/transform2d/transform2D";
+import { Transform2D } from "@framekore/transform2d/transform2D";
 import { InputManager } from "@framekore/input-manager";
 import { BOX_COLLIDE_2D, BoxCollide2D, RIGID_BODY_2D, RigidBody2D } from "@framekore/physics2d";
 
@@ -23,16 +23,16 @@ export class Player extends GameObject {
 
             this.sprite = new Sprite2D(texture)
             this.sprite.setFrame(0, 0)
-            this.addComponent(SPRITE_2D, this.sprite)
+            this.addComponent(this.sprite)
         })
         this.transformer = new Transform2D()
         this.transformer.position.x = 10
         this.transformer.position.y = 10
         this.transformer.scaleX = 2
         this.transformer.scaleY = 2
-        this.addComponent(TRANSFORM_2D, this.transformer)
-        this.addComponent(BOX_COLLIDE_2D, new BoxCollide2D(23, 21))
-        this.addComponent(RIGID_BODY_2D, new RigidBody2D())
+        this.addComponent(this.transformer)
+        this.addComponent(new BoxCollide2D(23, 21))
+        this.addComponent(new RigidBody2D())
     }
     update(_delta: number): void {
         super.update(_delta)

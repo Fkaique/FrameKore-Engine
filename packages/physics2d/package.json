@@ -5,7 +5,6 @@
   "main": "./src/index.js",
   "dependencies": {
     "@framekore/core": "workspace:*",
-    "@framekore/math": "workspace:*",
-    "@framekore/transform2d": "workspace:*"
+    "@framekore/math": "workspace:*"
   }
 }

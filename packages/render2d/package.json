@@ -4,7 +4,6 @@
   "description": "pacote de renderização 2d da engine",
   "main": "./src/index.js",
   "dependencies": {
-    "@framekore/core": "workspace:*",
-    "@framekore/transform2d": "workspace:*"
+    "@framekore/core": "workspace:*"
   }
 }

@@ -1,7 +1,11 @@
 import { Vector2 } from "../math/vector2"
 import { Component } from "../core/utils/component"
 
+export const RIGID_BODY_2D = Symbol("rigidBody2d");
+
 export class RigidBody2D extends Component{
+    static key = RIGID_BODY_2D
+    
     velocity = new Vector2()
     mass = 1
     useGravity = true

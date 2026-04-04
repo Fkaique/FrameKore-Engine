@@ -7,12 +7,20 @@ export interface EnginePlugin {
     setup(engine: Engine): void
     destroy?(engine: Engine): void
 
-    render?(scene: Scene): void
+    render?(scene: Scene, delta: number): void
     update?(engine: Engine, delta: number): void
     fixedUpdate?(engine: Engine, delta: number): void
 
     onComponentAdded?(component: Component): void
     onComponentRemoved?(component: Component): void
+}
+
+export interface AssetProvider {
+  load<T = unknown>(key: string, type: string, src: string): Promise<T>
+  get<T = unknown>(key: string): T | undefined
+  has(key: string): boolean
+  unload?(key: string): void
+  clear?(): void
 }
 
 export class Engine {
@@ -69,10 +77,10 @@ export class Engine {
         this.#currentScene.onEnter?.()
     }
 
-    #render = () => {
+    #render = (delta: number) => {
         if (!this.#currentScene) return
         for (const plugin of this.#plugins.values()) {
-            plugin.render?.(this.#currentScene)
+            plugin.render?.(this.#currentScene, delta)
         }
     }
 

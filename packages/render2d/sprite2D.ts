@@ -1,7 +1,10 @@
 import { Component } from "../core/utils/component";
 import type { Frame, Texture } from "./texture";
 
+export const SPRITE_2D = Symbol("sprite2d")
+
 export class Sprite2D extends Component{
+    static key = SPRITE_2D
     texture: Texture
     frame?: Frame
 

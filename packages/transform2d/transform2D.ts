@@ -1,11 +1,10 @@
 import { Component } from "../core/utils/component"
 import { Vector2 } from "../math/vector2"
+import { TRANSFORM_2D, type ITransform2D } from "./contract"
 
-export const TRANSFORM_2D = Symbol("transform2d")
-
-export class Transform2D extends Component{
+export class Transform2D extends Component implements ITransform2D{
+    static key = TRANSFORM_2D
     position = new Vector2()
-    scaleX = 1
-    scaleY = 1
+    scale = new Vector2(1,1)
     rotation = 0
 }

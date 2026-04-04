@@ -1,12 +1,13 @@
 import { AssetManager } from "@framekore/asset-manager";
 import { Engine, GameObject } from "@framekore/core";
 import { Vector2 } from "@framekore/math";
-import { BOX_COLLIDE_2D, BoxCollide2D, CollisionLayer, RIGID_BODY_2D, RigidBody2D } from "@framekore/physics2d";
-import { Sprite2D, SPRITE_2D, Texture } from "@framekore/render2d";
-import { Transform2D, TRANSFORM_2D } from "@framekore/transform2d/transform2D";
+import { BoxCollide2D, CollisionLayer, RigidBody2D } from "@framekore/physics2d";
+import { Sprite2D, Texture } from "@framekore/render2d";
+import { Transform2D } from "@framekore/transform2d/transform2D";
 import playerImage from '@/assets/kore.png'
 import { InputManager } from "@framekore/input-manager";
-
+import { TRANSFORM_2D } from "@framekore/transform2d";
+import { Camera2D } from "@framekore/render2d/camera2d";
 
 export class Player extends GameObject {
     sprite: Sprite2D | null = null
@@ -34,21 +35,22 @@ export class Player extends GameObject {
             this.sprite = new Sprite2D(texture)
             this.sprite.setFrame(0, 0)
 
-            this.addComponent(SPRITE_2D, this.sprite)
+            this.addComponent(this.sprite)
         })
         this.input = InputManager.get(engine)
         this.transformer = new Transform2D()
-        this.transformer.scaleX = 2
-        this.transformer.scaleY = 2
+        this.transformer.scale.x = 2
+        this.transformer.scale.y = 2
         this.transformer.position = this.position
         this.body = new RigidBody2D()
         this.body.useGravity = false
-        this.addComponent(TRANSFORM_2D, this.transformer)
-        this.addComponent(RIGID_BODY_2D, this.body)
-        this.addComponent(BOX_COLLIDE_2D, new BoxCollide2D(23 * this.transformer.scaleX, 21 * this.transformer.scaleY, {
+        const box = new BoxCollide2D(23, 21, {
             layer: CollisionLayer.Layer2,
             mask: CollisionLayer.Layer1 | CollisionLayer.Layer2
-        }))
+        })
+        this.addComponent(this.transformer)
+        this.addComponent(this.body)
+        this.addComponent(box)
     }
 
     update(_delta: number): void {

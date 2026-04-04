@@ -1,18 +1,27 @@
 import type { Engine } from "./engine"
 import type { Component } from "./utils/component"
+import type { ComponentKey, ComponentClass } from "./utils/componentKey"
 
 export class GameObject {
     #components = new Map<symbol, Component>()
     engine?: Engine
     destroyed = false
-    /**
-     * 
-     * @param key chave simbólica 
-     * @param component instancia de um Component
-     * @returns 
-     */
-    addComponent<T extends Component>(key: symbol, component: T): T {
-        return this.#setComponent(key, component)
+
+    #resolveKey<T extends Component>(key: ComponentKey<T>): symbol {
+        if (typeof key === "symbol") return key
+        if (key.key) return key.key
+
+        throw new Error("Classe de componente sem chave estática.")
+    }
+
+    addComponent<T extends Component>(component: T): T {
+        const ctor = component.constructor as ComponentClass<T>
+
+        if (!ctor.key) {
+            throw new Error(`Componente ${ctor.name} sem chave estática.`)
+        }
+
+        return this.#setComponent(ctor.key, component)
     }
 
     #setComponent<T extends Component>(key: symbol, component: T): T {
@@ -38,48 +47,32 @@ export class GameObject {
 
         return component
     }
-    /**
-     * remove um Component
-     * @param key chave simbólica
-     * @returns Component deletado ou undefined caso não o encontre
-     */
-    removeComponent<T extends Component>(key: symbol): T | undefined {
+
+    removeComponent<T extends Component>(key: ComponentKey<T>): T | undefined {
         this.#assertNotDestroyed()
         this.#assertEngine()
 
-        const component = this.#components.get(key) as T | undefined
+        const resolvedKey = this.#resolveKey(key)
+        const component = this.#components.get(resolvedKey) as T | undefined
+
         if (!component) return undefined
 
-        this.#detachComponent(key, component)
+        this.#detachComponent(resolvedKey, component)
         return component
     }
-    /**
-     * 
-     * @param key chave simbólica
-     * @returns um Component ou undefined caso não o encontre
-     */
-    getComponent<T extends Component>(key: symbol): T | undefined {
-        return this.#components.get(key) as T | undefined
+
+    getComponent<T extends Component>(key: ComponentKey<T>): T | undefined {
+        return this.#components.get(this.#resolveKey(key)) as T | undefined
     }
-    /**
-     * 
-     * @param key chave simbólica
-     * @returns 'true' se um Component existe na instancia de GameObject
-     */
-    hasComponent(key: symbol): boolean {
-        return this.#components.has(key)
+
+    hasComponent<T extends Component>(key: ComponentKey<T>): boolean {
+        return this.#components.has(this.#resolveKey(key))
     }
-    /**
-     * 
-     * @returns todos os Components de um GameObject
-     */
+
     getAllComponents(): readonly Component[] {
         return [...this.#components.values()]
     }
-    /**
-     * 
-     * destroi todos os Components de um gameObject
-     */
+
     destroy(): void {
         if (this.destroyed) return
         this.#assertEngine()

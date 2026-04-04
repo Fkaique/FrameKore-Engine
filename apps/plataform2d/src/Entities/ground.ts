@@ -1,8 +1,7 @@
 import type { Engine } from "@framekore/core";
 import { GameObject } from "@framekore/core/gameObject";
-import { BOX_COLLIDE_2D, BoxCollide2D } from "@framekore/physics2d";
-import { RenderManager2D } from "@framekore/render2d";
-import { Transform2D, TRANSFORM_2D } from "@framekore/transform2d";
+import { BoxCollide2D, CollisionLayer } from "@framekore/physics2d";
+import { Transform2D } from "@framekore/transform2d";
 
 export class Ground extends GameObject {
   constructor(engine: Engine) {
@@ -13,7 +12,10 @@ export class Ground extends GameObject {
     transform.position.y = 400;
     transform.position.x = 10;
 
-    this.addComponent(TRANSFORM_2D, transform);
-    this.addComponent(BOX_COLLIDE_2D, new BoxCollide2D(500, 50));
+    this.addComponent(transform);
+    this.addComponent(new BoxCollide2D(500, 50, {
+      layer: CollisionLayer.Layer1,
+      mask: CollisionLayer.Layer2
+    }));
   }
 }

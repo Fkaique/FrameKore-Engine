@@ -1,10 +1,14 @@
 import { definePlugin, Engine } from "../core/engine";
 import type { GameObject } from "../core/gameObject";
+import { CAMERA_2D, Camera2D } from "./camera2d"
 import type { Scene } from "../core/scene";
 import { type TickerDisposer } from "../core/utils/ticker";
-import { Sprite2D } from "./sprite2D";
+import { Sprite2D, SPRITE_2D } from "./sprite2D";
 import { Texture } from "./texture";
-import { Transform2D, TRANSFORM_2D } from "../transform2d/transform2D";
+import { type ITransform2D, TRANSFORM_2D } from "../transform2d/contract";
+import type { Component } from "../core/utils/component";
+
+type TransformLike = Component & ITransform2D
 
 const sprites = new WeakMap<Engine, Set<Sprite2D>>()
 
@@ -33,10 +37,10 @@ export const render2d = definePlugin((canvas: HTMLCanvasElement) => {
                 sprites.get(gameObject.engine)?.delete(component)
             }
         },
-        render(scene) {
+        render(scene, delta) {
             const manager = RenderManager2D.getFromScene(scene);
-            manager.render(scene);
-            
+            manager.render(scene, delta);
+
         },
         destroy() {
             renderDisposer?.dispose()
@@ -45,12 +49,13 @@ export const render2d = definePlugin((canvas: HTMLCanvasElement) => {
 })
 
 
-export const SPRITE_2D = Symbol("sprite2d")
+
 
 export class RenderManager2D {
     canvas: HTMLCanvasElement
     ctx: CanvasRenderingContext2D
     #drawQueue: Array<(ctx: CanvasRenderingContext2D) => void> = []
+    #screenDrawQueue: Array<(ctx: CanvasRenderingContext2D) => void> = []
     #antialiasing: boolean = false
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
@@ -64,7 +69,7 @@ export class RenderManager2D {
 
     set antialiasing(value: boolean) {
         this.ctx.imageSmoothingEnabled = value
-    } 
+    }
 
     static get(engine: Engine): RenderManager2D {
         const render = engine.getResource(RenderManager2D)
@@ -88,12 +93,125 @@ export class RenderManager2D {
         return this.get(scene.engine);
     }
 
+    #getMainCamera(scene: Scene): {
+        camera: Camera2D,
+        transform: TransformLike
+    } | null {
+        for (const obj of scene.getObjects()) {
+            const camera = obj.getComponent(Camera2D)
+            if (!camera || !camera.isMain) continue
+
+            const transform = obj.getComponent<TransformLike>(TRANSFORM_2D)
+            if (!transform) continue
+
+            return { camera, transform }
+        }
+
+        return null
+    }
+    #applyCamera(camera: Camera2D, transform: TransformLike) {
+        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2)
+        this.ctx.scale(camera.zoom, camera.zoom)
+        this.ctx.rotate(-camera.rotation)
+        this.ctx.translate(-transform.position.x, -transform.position.y)
+    }
+
+    #updateCamera(camera: Camera2D, transform: TransformLike, delta: number) {
+        if (!camera.target)
+            return
+        const targetTransform = camera.target.getComponent<TransformLike>(TRANSFORM_2D)
+        if (!targetTransform)
+            return
+        const targetX = targetTransform.position.x + camera.offset.x
+        const targetY = targetTransform.position.y + camera.offset.y
+
+        const t = Math.min(1, camera.followSpeed * delta)
+
+        let desiredX = transform.position.x
+        let desiredY = transform.position.y
+
+        const zoomDiff = camera.targetZoom - camera.zoom
+        camera.zoom += zoomDiff * Math.min(1,camera.zoomSpeed * delta)
+        camera.zoom = this.#clamp(camera.zoom, camera.minZoom, camera.maxZoom)
+
+        if (camera.deadZoneWidth > 0) {
+            const halfDeadZoneW = camera.deadZoneWidth / 2
+            const left = transform.position.x - halfDeadZoneW
+            const right = transform.position.x + halfDeadZoneW
+
+            if (targetX < left) desiredX = targetX + halfDeadZoneW
+            else if (targetX > right) desiredX = targetX - halfDeadZoneW
+        } else {
+            desiredX = targetX
+        }
+
+        if (camera.deadZoneHeight > 0) {
+            const halfDeadZoneH = camera.deadZoneHeight / 2
+            const top = transform.position.y - halfDeadZoneH
+            const bottom = transform.position.y + halfDeadZoneH
+
+            if (targetY < top) desiredY = targetY + halfDeadZoneH
+            else if (targetY > bottom) desiredY = targetY - halfDeadZoneH
+        } else {
+            desiredY = targetY
+        }
+
+        if (camera.followX) {
+            transform.position.x = this.#moveTowards(transform.position.x, desiredX, t)
+        }
+
+        if (camera.followY) {
+            transform.position.y = this.#moveTowards(transform.position.y, desiredY, t)
+        }
+
+        this.#clampCameraToBounds(camera, transform)
+    }
+
+    #moveTowards(current: number, target: number, t: number) {
+        return current + (target - current) * t
+    }
+
+    #clamp(value: number, min: number, max: number) {
+        return Math.max(min, Math.min(max, value))
+    }
+
+    #clampCameraToBounds(camera: Camera2D, transform: TransformLike) {
+        if (!camera.worldBounds)
+            return
+
+        const bounds = camera.worldBounds
+
+        const halfWidth = this.canvas.width / 2 / camera.zoom
+        const halfHeight = this.canvas.height / 2 / camera.zoom
+
+        const minX = bounds.x + halfWidth
+        const maxX = bounds.x + bounds.width - halfWidth
+        const minY = bounds.y + halfHeight
+        const maxY = bounds.y + bounds.height - halfHeight
+
+        if (minX > maxX) {
+            transform.position.x = bounds.x + bounds.width / 2
+        } else {
+            transform.position.x = this.#clamp(transform.position.x, minX, maxX)
+        }
+
+        if (minY > maxY) {
+            transform.position.y = bounds.y + bounds.height / 2
+        } else {
+            transform.position.y = this.#clamp(transform.position.y, minY, maxY)
+        }
+    }
+
     createTexture(image: HTMLImageElement | HTMLCanvasElement) {
         return new Texture(image)
     }
 
     draw(callback: (ctx: CanvasRenderingContext2D) => void) {
         this.#drawQueue.push(callback)
+    }
+
+    drawScreen(callback: (ctx: CanvasRenderingContext2D) => void) {
+        this.#screenDrawQueue.push(callback)
     }
 
     #flushDrawQueue() {
@@ -103,25 +221,32 @@ export class RenderManager2D {
         this.#drawQueue.length = 0
     }
 
-    #renderSprite(transform: Transform2D, sprite: Sprite2D) {
+    #flushScreenDrawQueue() {
+        for (const draw of this.#screenDrawQueue) {
+            draw(this.ctx)
+        }
+        this.#screenDrawQueue.length = 0
+    }
+
+    #renderSprite(transform: ITransform2D, sprite: Sprite2D) {
         const f = sprite.frame!
 
         this.ctx.save()
 
         this.ctx.translate(transform.position.x, transform.position.y)
         this.ctx.rotate(transform.rotation)
-        this.ctx.scale(transform.scaleX, transform.scaleY)
+        this.ctx.scale(transform.scale.x, transform.scale.y)
 
         this.ctx.drawImage(
             sprite.texture.image,
             f.x, f.y, f.width, f.height,
-            0, 0, f.width, f.height
+            -f.width/2, -f.height/2, f.width, f.height
         )
         this.ctx.restore()
     }
 
     #renderObjects(obj: GameObject) {
-        const transform = obj.getComponent<Transform2D>(TRANSFORM_2D)
+        const transform = obj.getComponent<TransformLike>(TRANSFORM_2D)
         const sprite = obj.getComponent<Sprite2D>(SPRITE_2D)
 
         if (!transform || !sprite || !sprite.frame) return
@@ -129,15 +254,29 @@ export class RenderManager2D {
         this.#renderSprite(transform, sprite)
     }
 
-    render(scene?: Scene) {
+    render(scene?: Scene, delta: number = 1 / 60) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         if (!scene) return
-        
+
+        const cam = this.#getMainCamera(scene)
+
+        this.ctx.save()
+
+        if (cam) {
+            this.#updateCamera(cam.camera, cam.transform, delta)
+            this.#applyCamera(cam.camera, cam.transform)
+        }
+
         const objects = scene.getObjects()
 
         for (const obj of objects) {
             this.#renderObjects(obj)
         }
+
         this.#flushDrawQueue()
+
+        this.ctx.restore()
+
+        this.#flushScreenDrawQueue()
     }
 }

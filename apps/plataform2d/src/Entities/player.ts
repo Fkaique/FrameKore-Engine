@@ -2,8 +2,8 @@ import { AssetManager } from "@framekore/asset-manager"
 import { GameObject, Engine } from "@framekore/core"
 import { InputManager } from "@framekore/input-manager"
 import { Vector2 } from "@framekore/math"
-import { RIGID_BODY_2D, RigidBody2D, BOX_COLLIDE_2D, BoxCollide2D } from "@framekore/physics2d"
-import { Texture, SPRITE_2D, Sprite2D } from "@framekore/render2d"
+import { RIGID_BODY_2D, RigidBody2D, BoxCollide2D, CollisionLayer } from "@framekore/physics2d"
+import { Texture, Sprite2D } from "@framekore/render2d"
 import { Transform2D, TRANSFORM_2D } from "@framekore/transform2d"
 
 export class Player extends GameObject {
@@ -40,14 +40,17 @@ export class Player extends GameObject {
             const sprite = new Sprite2D(texture);
             sprite.setFrame(0, 0);
 
-            this.addComponent(SPRITE_2D, sprite);
+            this.addComponent(sprite);
         });
         const transform = new Transform2D()
         transform.scaleX = 2
         transform.scaleY = 2
-        this.addComponent(TRANSFORM_2D, transform);
-        this.addComponent(RIGID_BODY_2D, new RigidBody2D());
-        this.addComponent(BOX_COLLIDE_2D, new BoxCollide2D(23 * transform.scaleX, 21 * transform.scaleY));
+        this.addComponent(transform);
+        this.addComponent(new RigidBody2D());
+        this.addComponent(new BoxCollide2D(23, 21, {
+            layer: CollisionLayer.Layer2,
+            mask: CollisionLayer.Layer1
+        }));
     }
     update(_delta: number): void {
         super.update(_delta)
@@ -71,6 +74,7 @@ export class Player extends GameObject {
             this.#jump()
         }
     }
+
     #jump() {
         if (!this.body) return
         if (!this.body.touching.bottom) return

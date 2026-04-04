@@ -1,9 +1,9 @@
 import { AssetManager } from "@framekore/asset-manager";
 import { Engine, GameObject } from "@framekore/core";
-import { RenderManager2D, Sprite2D, SPRITE_2D, Texture } from "@framekore/render2d";
+import { RenderManager2D, Sprite2D, Texture } from "@framekore/render2d";
 import NPCImage from "@/assets/Lillian.png"
-import { Transform2D, TRANSFORM_2D } from "@framekore/transform2d";
-import { BOX_COLLIDE_2D, BoxCollide2D, CollisionLayer } from "@framekore/physics2d";
+import { Transform2D } from "@framekore/transform2d";
+import { BoxCollide2D, CollisionLayer } from "@framekore/physics2d";
 import { Vector2 } from "@framekore/math";
 
 export class NPC extends GameObject {
@@ -14,7 +14,7 @@ export class NPC extends GameObject {
         super()
         this.engine = engine
         const assets = AssetManager.get(engine)
-        this.position = new Vector2(200, 200)
+        this.position = new Vector2(600, 200)
         assets.load('npc', "image", NPCImage).then((img) => {
             const texture = new Texture(img)
             texture.slice(14, 24)
@@ -22,19 +22,19 @@ export class NPC extends GameObject {
             this.sprite = new Sprite2D(texture)
             this.sprite.setFrame(0, 0)
 
-            this.addComponent(SPRITE_2D, this.sprite)
+            this.addComponent(this.sprite)
         })
         const transformer = new Transform2D()
         transformer.position = this.position
-        transformer.scaleX = 2
-        transformer.scaleY = 2
-        this.body = new BoxCollide2D(14 * transformer.scaleX, 24 * transformer.scaleY, {
+        transformer.scale.x = 2
+        transformer.scale.y = 2
+        this.body = new BoxCollide2D(14, 24, {
             isTrigger: true,
             layer: CollisionLayer.Layer2,
             mask: CollisionLayer.Layer2
         })
-        this.addComponent(TRANSFORM_2D, transformer)
-        this.addComponent(BOX_COLLIDE_2D, this.body)
+        this.addComponent(transformer)
+        this.addComponent(this.body)
     }
     update(_delta: number): void {
         super.update(_delta)

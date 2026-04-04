@@ -1,5 +1,8 @@
+import { Vector2 } from "../math/vector2";
 import { Component } from "../core/utils/component";
 import { Transform2D } from "../transform2d/transform2D";
+
+export const BOX_COLLIDE_2D = Symbol("boxCollide2d");
 
 export const CollisionLayer = {
     NONE: 0,
@@ -18,11 +21,12 @@ export type CollisionLayer = number
 
 export class BoxCollide2D extends Component {
     // gameObject?: any
+    static key = BOX_COLLIDE_2D
 
     width: number
     height: number
-    offsetX = 0
-    offsetY = 0
+    offset = new Vector2()
+    #origin = new Vector2(0.5, 0.5)
 
     isTrigger: boolean
     layer: CollisionLayer
@@ -41,15 +45,29 @@ export class BoxCollide2D extends Component {
         this.layer = options.layer ?? 0
         this.mask = options.mask ?? 0
     }
+
+    setOrigin(x: number, y: number) {
+        this.#origin.x = x
+        this.#origin.y = y
+    }
     /**
      * Retorna os limites AABB do collider com base no transform.
      */
     getBounds(transform: Transform2D) {
+        const scaledWidth = this.width * transform.scale.x
+        const scaledHeight = this.height * transform.scale.y
+
+        const offsetX = scaledWidth * this.#origin.x
+        const offsetY = scaledHeight * this.#origin.y
+
+        const x = transform.position.x + this.offset.x
+        const y = transform.position.y + this.offset.y
+
         return {
-            left: transform.position.x + this.offsetX,
-            right: transform.position.x + this.offsetX + this.width * transform.scaleX,
-            top: transform.position.y + this.offsetY,
-            bottom: transform.position.y + this.offsetY + this.height * transform.scaleY,
-        }
+        left: x - offsetX,
+        right: x + (scaledWidth - offsetX),
+        top: y - offsetY,
+        bottom: y + (scaledHeight - offsetY),
+    }
     }
 }
