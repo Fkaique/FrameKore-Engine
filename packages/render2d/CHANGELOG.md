@@ -1,5 +1,15 @@
 # @framekore/render2d
 
+## 0.0.4
+
+### Patch Changes
+
+- a93d0ff: permissions code
+- Updated dependencies [a93d0ff]
+  - @framekore/transform2d@0.0.4
+  - @framekore/core@0.0.4
+  - @framekore/math@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes

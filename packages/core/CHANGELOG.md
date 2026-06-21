@@ -1,5 +1,11 @@
 # @framekore/core
 
+## 0.0.4
+
+### Patch Changes
+
+- a93d0ff: permissions code
+
 ## 0.0.3
 
 ### Patch Changes

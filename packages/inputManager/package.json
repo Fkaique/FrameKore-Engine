@@ -1,7 +1,10 @@
 {
   "name": "@framekore/input-manager",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
+  "files": [
+    "./dist"
+  ],
   "description": "pacote controlador de input",
   "dependencies": {
     "@framekore/core": "workspace:*"

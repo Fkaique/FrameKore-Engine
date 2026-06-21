@@ -1,7 +1,10 @@
 {
   "name": "@framekore/render2d",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
+  "files": [
+    "./dist"
+  ],
   "description": "pacote de renderização 2d da engine",
   "scripts": {
     "build": "tsdown"

@@ -1,11 +1,14 @@
 {
   "name": "@framekore/asset-manager",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "description": "pacote controlador de assets",
   "scripts": {
     "build": "tsdown"
   },
+  "files": [
+    "./dist"
+  ],
   "dependencies": {
     "@framekore/core": "workspace:*"
   },

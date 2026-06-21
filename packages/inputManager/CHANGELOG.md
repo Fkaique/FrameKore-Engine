@@ -1,5 +1,13 @@
 # @framekore/input-manager
 
+## 0.0.4
+
+### Patch Changes
+
+- a93d0ff: permissions code
+- Updated dependencies [a93d0ff]
+  - @framekore/core@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
