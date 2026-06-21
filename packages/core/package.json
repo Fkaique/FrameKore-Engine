@@ -1,9 +1,8 @@
 {
   "name": "@framekore/core",
-  "version": "0.0.1",
-"type": "module",
-  "description": "core da engine",
+  "version": "0.0.2",
   "type": "module",
+  "description": "core da engine",
   "scripts": {
     "build": "tsdown"
   },

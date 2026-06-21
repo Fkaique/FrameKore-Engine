@@ -1,6 +1,6 @@
 {
   "name": "@framekore/transform2d",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "description": "pacote de transformações 2d da engine",
   "dependencies": {
