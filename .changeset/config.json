@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": true,
+  "fixed": [
+    ["*"]
+  ],
+  "linked": [],
+  "privatePackages": {
+    "version": false
+  },
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["correndo-contra-o-eco", "plataform2d", "rpg", "teste", "teste2", "teste3"]
+}
