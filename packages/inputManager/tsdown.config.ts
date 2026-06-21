@@ -10,7 +10,7 @@ exports: true,
     outDir: 'dist',
     dts: true,
     sourcemap: true,
-    minify: true
+    minify: true,
 },
 {
     entry: 'src/index.ts',
@@ -19,7 +19,13 @@ exports: true,
     platform: 'browser',
     target: 'ES2024',
     globalName: 'Framekore.inputManager',
+    outputOptions: {
+        globals: {
+            "@framekore/core": "Framekore.core",
+        }
+    },
     outDir: 'dist',
     sourcemap: true,
+    
     minify: true
 }])

@@ -19,6 +19,12 @@ export default defineConfig([{
     platform: 'browser',
     target: 'ES2024',
     globalName: 'Framekore.transform2d',
+    outputOptions: {
+        globals: {
+            "@framekore/core": "Framekore.core",
+            "@framekore/math": "Framekore.math",
+        }
+    },
     outDir: 'dist',
     sourcemap: true,
     minify: true

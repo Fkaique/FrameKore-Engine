@@ -19,6 +19,13 @@ exports: true,
     platform: 'browser',
     target: 'ES2024',
     globalName: 'Framekore.render2d',
+    outputOptions: {
+        globals: {
+            "@framekore/core": "Framekore.core",
+            "@framekore/math": "Framekore.math",
+            "@framekore/transform2d": "Framekore.transform2d",
+        }
+    },
     outDir: 'dist',
     sourcemap: true,
     minify: true

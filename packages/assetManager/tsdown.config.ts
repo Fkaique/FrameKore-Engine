@@ -20,6 +20,11 @@ exports: true,
     platform: 'browser',
     target: 'ES2024',
     globalName: 'Framekore.assetManager',
+    outputOptions: {
+        globals: {
+            "@framekore/core": "Framekore.core",
+        }
+    },
     outDir: 'dist',
     sourcemap: true,
     minify: true
