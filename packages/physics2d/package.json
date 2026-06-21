@@ -1,10 +1,25 @@
 {
   "name": "@framekore/physics2d",
   "version": "0.0.1",
+  "type": "module",
   "description": "pacote de fisica 2d da engine",
-  "main": "./src/index.js",
   "dependencies": {
     "@framekore/core": "workspace:*",
-    "@framekore/math": "workspace:*"
+    "@framekore/math": "workspace:*",
+    "@framekore/transform2d": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.2",
+    "typescript": "~5.9.3"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   }
 }

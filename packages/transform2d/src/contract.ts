@@ -1,4 +1,4 @@
-import type { Vector2 } from "../math/vector2"
+import type { Vector2 } from "@framekore/math"
 
 export interface ITransform2D {
     position: Vector2

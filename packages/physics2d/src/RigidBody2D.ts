@@ -1,5 +1,5 @@
-import { Vector2 } from "../math/vector2"
-import { Component } from "../core/utils/component"
+import { Vector2 } from "@framekore/math"
+import { Component } from "@framekore/core"
 
 export const RIGID_BODY_2D = Symbol("rigidBody2d");
 

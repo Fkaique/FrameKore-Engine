@@ -1,11 +1,24 @@
 {
   "name": "@framekore/transform2d",
   "version": "0.0.1",
-  "description": "pacote de transformações 2d da engine",
   "type": "module",
-  "main": "./src/index.ts",
+  "description": "pacote de transformações 2d da engine",
   "dependencies": {
     "@framekore/core": "workspace:*",
     "@framekore/math": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.2",
+    "typescript": "~5.9.3"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   }
 }

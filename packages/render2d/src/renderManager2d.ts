@@ -1,12 +1,9 @@
-import { definePlugin, Engine } from "../core/engine";
-import type { GameObject } from "../core/gameObject";
-import { CAMERA_2D, Camera2D } from "./camera2d"
-import type { Scene } from "../core/scene";
-import { type TickerDisposer } from "../core/utils/ticker";
+import { type Component, definePlugin, Engine, type GameObject, type Scene, type TickerDisposer } from "@framekore/core";
+import { type ITransform2D, TRANSFORM_2D } from "@framekore/transform2d";
+
+import { Camera2D } from "./camera2d";
 import { Sprite2D, SPRITE_2D } from "./sprite2D";
 import { Texture } from "./texture";
-import { type ITransform2D, TRANSFORM_2D } from "../transform2d/contract";
-import type { Component } from "../core/utils/component";
 
 type TransformLike = Component & ITransform2D
 

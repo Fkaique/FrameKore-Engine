@@ -1,5 +1,5 @@
-import { assetManager } from "@framekore/asset-manager";
 import { Engine } from "@framekore/core";
+import { assetManager } from "@framekore/asset-manager";
 import { inputPlugin } from "@framekore/input-manager";
 import { physics2d } from "@framekore/physics2d";
 import { render2d } from "@framekore/render2d";

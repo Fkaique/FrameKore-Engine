@@ -1,5 +1,5 @@
 import type { Engine } from "@framekore/core";
-import { GameObject } from "@framekore/core/gameObject";
+import { GameObject } from "@framekore/core";
 import { BoxCollide2D, CollisionLayer } from "@framekore/physics2d";
 import { Transform2D } from "@framekore/transform2d";
 

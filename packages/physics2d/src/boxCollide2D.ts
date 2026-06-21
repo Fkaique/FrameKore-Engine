@@ -1,6 +1,6 @@
-import { Vector2 } from "../math/vector2";
-import { Component } from "../core/utils/component";
-import { Transform2D } from "../transform2d/transform2D";
+import { Vector2 } from "@framekore/math";
+import { Component } from "@framekore/core";
+import { Transform2D } from "@framekore/transform2d";
 
 export const BOX_COLLIDE_2D = Symbol("boxCollide2d");
 

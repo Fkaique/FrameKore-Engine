@@ -1,1 +1,1 @@
-export * from "../assetManager"
+export * from "./assetManager"

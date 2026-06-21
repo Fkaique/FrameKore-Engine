@@ -15,12 +15,22 @@ export interface EnginePlugin {
     onComponentRemoved?(component: Component): void
 }
 
-export interface AssetProvider {
-  load<T = unknown>(key: string, type: string, src: string): Promise<T>
-  get<T = unknown>(key: string): T | undefined
-  has(key: string): boolean
-  unload?(key: string): void
-  clear?(): void
+// export interface AssetProvider {
+//   load<T = unknown>(key: string, type: string, src: string): Promise<T>
+//   get<T = unknown>(key: string): T | undefined
+//   has(key: string): boolean
+//   unload?(key: string): void
+//   clear?(): void
+// }
+
+export interface IDebuggable {
+    readonly debugCollor?: string
+    getDebugBounds(): {
+        x: number
+        y: number
+        w: number
+        h: number
+    }
 }
 
 export class Engine {

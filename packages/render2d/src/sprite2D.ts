@@ -1,4 +1,4 @@
-import { Component } from "../core/utils/component";
+import { Component } from "../../core";
 import type { Frame, Texture } from "./texture";
 
 export const SPRITE_2D = Symbol("sprite2d")

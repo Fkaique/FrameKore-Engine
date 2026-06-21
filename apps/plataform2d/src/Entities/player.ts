@@ -43,8 +43,8 @@ export class Player extends GameObject {
             this.addComponent(sprite);
         });
         const transform = new Transform2D()
-        transform.scaleX = 2
-        transform.scaleY = 2
+        transform.scale.x = 2
+        transform.scale.y = 2
         this.addComponent(transform);
         this.addComponent(new RigidBody2D());
         this.addComponent(new BoxCollide2D(23, 21, {

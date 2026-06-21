@@ -1,4 +1,4 @@
-import { definePlugin, type Engine } from "../core/engine";
+import { definePlugin, type Engine } from "@framekore/core";
 
 export const inputPlugin = definePlugin(()=>{
     return {

@@ -1,6 +1,6 @@
-import { Vector2 } from '../math/vector2'
-import { GameObject } from '../core/gameObject'
-import { Component } from '../core/utils/component'
+import { Vector2 } from '../../math'
+import { GameObject } from '../../core'
+import { Component } from '../../core'
 
 export const CAMERA_2D = Symbol("camera2d")
 

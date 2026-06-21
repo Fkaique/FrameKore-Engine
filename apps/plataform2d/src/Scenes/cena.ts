@@ -51,8 +51,8 @@ export class Cena extends Scene {
         ctx.fillRect(
           transform.position.x,
           transform.position.y,
-          box.width * transform.scaleX,
-          box.height * transform.scaleY,
+          box.width * transform.scale.x,
+          box.height * transform.scale.y,
         );
       });
     }

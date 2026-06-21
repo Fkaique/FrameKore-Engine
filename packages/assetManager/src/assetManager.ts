@@ -1,4 +1,4 @@
-import { definePlugin, Engine } from "../core/engine";
+import { definePlugin, Engine } from "@framekore/core";
 
 export const assetManager = definePlugin(() => {
     return {

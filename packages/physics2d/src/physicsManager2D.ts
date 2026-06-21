@@ -1,9 +1,8 @@
-import { definePlugin, Engine } from "../core/engine";
-import type { GameObject } from "../core/gameObject";
-import type { Component } from "../core/utils/component";
-import { Priority } from "../core/utils/ticker";
-import { Vector2 } from "../math/vector2";
-import { TRANSFORM_2D, type ITransform2D } from "../transform2d/contract";
+import { definePlugin, Engine } from "@framekore/core";
+import type { GameObject } from "@framekore/core";
+import type { Component } from "@framekore/core";
+import { Vector2 } from "@framekore/math";
+import { TRANSFORM_2D, type ITransform2D } from "@framekore/transform2d";
 import { BOX_COLLIDE_2D, BoxCollide2D } from "./boxCollide2D";
 import { RIGID_BODY_2D, RigidBody2D } from "./RigidBody2D";
 
